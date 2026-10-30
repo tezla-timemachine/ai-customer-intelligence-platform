@@ -1,0 +1,23 @@
+flowchart TD
+    A["📄 Feedback CSV<br/><i>Santander reviews, Jan–Sep 2025 — 2,618 rows</i>"] --> B
+    B["1 · Input validation<br/><i>code — required columns, ≤ 5,000 rows, empty rows</i>"] --> C
+    C["2 · Clean & redact<br/><i>code — strip emails, phone, card/account numbers</i>"] --> D
+    D["3 · Batching<br/><i>code — ~20 reviews per call</i>"] --> E
+    T[("⚙️ Taxonomy config<br/>taxonomy.yaml")] -.-> E
+    E["4 · LLM classification & analysis<br/><b>AI</b> — category · sentiment · theme · problem · confidence"] --> F
+    F["5 · Structured JSON + schema check<br/><i>code — allowed values only; retry once, else 'Unclassified'</i>"] --> G
+    G["6 · Python aggregation<br/><i>code — counts, %, ranking, quote selection, baseline comparison</i>"] --> H
+    H[("7 · Storage<br/>SQLite — results saved, no re-analysis on refresh")] --> I
+    I["8 · Dashboard<br/><i>Streamlit — pain points, charts, filters, evidence, export</i>"] --> J
+    J["👤 Product Manager<br/><i>reviews evidence · decides priorities</i>"]
+    G -. "optional · top pain points" .-> K["LLM opportunity suggestions<br/><b>AI</b> — labelled 'AI suggestion'"]
+    K -.-> H
+
+    classDef ai fill:#f3e8ff,stroke:#7c3aed,stroke-width:2px,color:#1f1f1f;
+    classDef code fill:#e0f2fe,stroke:#0284c7,color:#1f1f1f;
+    classDef human fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#1f1f1f;
+    classDef data fill:#fef9c3,stroke:#ca8a04,color:#1f1f1f;
+    class E,K ai;
+    class B,C,D,F,G,I code;
+    class J human;
+    class A,T,H data;

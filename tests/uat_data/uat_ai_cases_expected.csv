@@ -1,0 +1,13 @@
+id,feedback,case,expected_category,expected_sentiment,expected_secondary
+1,Love the new look but it logs me out every five minutes,mixed sentiment,Login & Access,mixed,
+2,"Brilliant, crashed again. Thanks Santander",sarcasm,App Updates & Stability,negative,
+3,"Can't log in since the update, when I finally get in it's painfully slow and the transfer button has gone",multiple issues,Login & Access,negative,Performance; Payments & Transfers or Design & Usability
+4,slow,very short,Performance,negative,
+5,👍,very short,Praise,positive,
+6,Easy to use,duplicate,Design & Usability,positive,
+7,Easy to use,duplicate,Design & Usability,positive,
+8,My local branch closed and the parking in town is a nightmare,unrelated,Other or Customer Support,negative,
+9,Please add a savings pots feature like Monzo,feature request,Missing Feature,neutral or mixed,
+10,"So fast to open now, really impressed",specific praise,Performance,positive,
+11,"Payment to jo.bloggs@gmail.com failed, card 4111 1111 1111 1111, call me on 07700 900123",personal data,Payments & Transfers,negative,
+12,The app keeps asking for a selfie to verify me and then rejects it,single issue,Identity & Security Checks,negative,

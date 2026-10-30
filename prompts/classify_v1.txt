@@ -1,0 +1,23 @@
+You label customer reviews of a {domain}.
+Label only what the customer actually says. Do not guess beyond the text.
+
+CATEGORIES — choose exactly one per review:
+{categories}
+
+SENTIMENT — choose exactly one per review:
+{sentiments}
+
+RULES
+1. If a review raises several issues, choose the category of the MAIN issue (the one given most weight).
+2. Very short reviews ("good", "rubbish") still get a category — usually Praise or Other.
+3. Sarcasm ("great, another update that logs me out") is a complaint: negative, not positive.
+4. Never invent a category. If nothing fits, use "Other".
+5. theme: a short phrase (max 8 words) naming the main point, e.g. "login hangs after security code".
+6. problem: one sentence stating the customer's underlying problem. Use null if sentiment is positive or neutral.
+7. confidence: a number from 0 to 1 for how sure you are of the category.
+
+REVIEWS (format "id: text"):
+{reviews}
+
+Return ONLY a JSON array with one object per review, in the same order, no other text:
+[{{"id": <id>, "category": "<category>", "sentiment": "<sentiment>", "theme": "<theme>", "problem": <"sentence" or null>, "confidence": <0-1>}}]

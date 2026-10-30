@@ -1,0 +1,58 @@
+# Controlled taxonomy (BRD §2.5, decisions D4/D5/D7).
+# v2: Praise only for non-specific praise; multi-issue reviews get other_categories.
+# Edit this file to change categories — no code changes needed.
+version: 2
+domain: UK banking mobile app reviews
+categories:
+- name: Login & Access
+  definition: Logging in, passwords, PINs, biometrics, being locked out or kicked out — problems or praise.
+  example: Unable to logon, put in security number and it just sits doing nothing
+- name: Identity & Security Checks
+  definition: ID verification, selfies, photo ID, verification codes / one-time passcodes, fraud checks, feeling safe — problems
+    or praise.
+  example: have to take photos of my self and driving licence to authorise my account
+- name: App Updates & Stability
+  definition: Updates, crashes, freezing, install failures, bugs, the app not opening or not working.
+  example: has to be updated again before I can access my account. But it fails to install
+- name: Performance
+  definition: 'Speed: slow loading, lag, timeouts, notifications arriving late — or praise for being fast.'
+  example: New 2024 app is slow to open
+- name: Payments & Transfers
+  definition: Sending money, paying cards or bills, payees, standing orders, direct debits, pending payments.
+  example: Cant edit payees or standing orders
+- name: Cards
+  definition: Debit/credit card controls, lost or stolen cards, PIN changes, activation, Apple Pay / Google Pay.
+  example: Can't add my card to Google Pay
+- name: Design & Usability
+  definition: Layout, navigation, ease of use, finding things, look and feel, 'old app was better' with no specific detail
+    — problems or praise.
+  example: only half the screen can show accounts info while the rest is wasted
+- name: Missing Feature
+  definition: A specific feature the app lacks, or one that was removed and the customer wants back.
+  example: No payment notifications
+- name: Fees & Charges
+  definition: Fees, charges, interest and savings rates, exchange rates, overdraft costs.
+  example: Charged a fee for using my card abroad
+- name: Customer Support
+  definition: Branches, phone, chat, complaints handling, staff.
+  example: Waited an hour on the phone and got cut off
+- name: Praise
+  definition: Positive feedback that does NOT name any specific aspect (e.g. 'Great app', '🥰'). If the review praises something
+    specific, use that aspect's category with positive sentiment instead.
+  example: very easy to use app, very happy with it
+- name: Other
+  definition: Not about the app or the bank's service, or unintelligible.
+  example: My phone battery is rubbish
+sentiments:
+- name: positive
+  definition: Only positive feeling expressed.
+- name: negative
+  definition: Only negative feeling expressed, including sarcastic praise that is really a complaint.
+- name: neutral
+  definition: Factual or no clear feeling.
+- name: mixed
+  definition: Both genuine praise and a genuine complaint in the same review.
+multi_issue:
+  max_other_categories: 3
+  rule: category = the MAIN issue (most words or anger; if equal, first mentioned). other_categories = any other distinct
+    issues clearly raised.

@@ -1,0 +1,10 @@
+.env
+__pycache__/
+.pytest_cache/
+data/results.db
+data/df_final.parquet
+.streamlit/secrets.toml
+data/prompt_log.txt
+.venv/
+venv/
+.DS_Store
