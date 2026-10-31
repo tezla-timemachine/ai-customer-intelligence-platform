@@ -185,7 +185,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 
 | # | Item | Owner |
 |---|---|---|
-| 1 | **Commit author shows "No Thrills Studio" and a personal email publicly.** Before sharing the repo, set `user.name` to Tez's name and `user.email` to `tezla-timemachine@users.noreply.github.com` for this repo, then rewrite the author on both commits (`git rebase --root --exec "git commit --amend --no-edit --reset-author"`), move tag v0.4.0, and force-push. In GitHub, turn on Settings → Emails → "Keep my email addresses private". | Tez (via Claude Code on Mac) |
+| 1 | ✅ **Done 31 Oct: commit author fixed.** Both of Tez's commits and the v0.4.0 tag were rewritten to `Terence Field <129769377+tezla-timemachine@users.noreply.github.com>`, keeping the original dates, and force-pushed. The repo's git config now uses that identity. **Still to do (Tez, on github.com):** Settings → Emails → tick "Keep my email addresses private" and "Block command line pushes that expose my email". | Tez |
 | 2 | Failure analysis → main-issue rule → prompt v3 → re-run, then write `…-07-ai-evaluation-results.md` | Together |
 | 3 | Run the dashboard on all 2,618 reviews with the real model; sanity-check the pain points | Tez |
 | 4 | Run the 26 UAT cases and fill in actual results | Tez |
