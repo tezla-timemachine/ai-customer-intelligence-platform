@@ -18,6 +18,8 @@ and evaluation result.
 - Product case study, draft v0.1 (doc 09): problem, user, AI opportunity, decisions, architecture, MVP, evaluation, what failed, what changed, results and next iteration.
 - Change control log (doc 10): every change to scope, taxonomy, prompt, model, labels, data or schedule gets a change record (CR-01 to CR-11, back-filled from 30 Oct).
 - Eval run with prompt v3: **category 92.0%, sentiment 94.0%. The quality gate passes (milestone M4).** Low-star category accuracy rose from 74.2% to 93.5%.
+- Full-data run on all 2,618 reviews (prompt v3): every review labelled, 1.9% "Other", **$0.26 for the run (about $0.10 per 1,000 reviews)**, about 30 minutes. Speed misses the 8-minute target (CR-12 proposed).
+- Dashboard screenshots in `docs/screenshots/`, used in the case study (now draft v0.2) and the README.
 ### Planned
 - Deployment to Streamlit Community Cloud (milestone M6)
 

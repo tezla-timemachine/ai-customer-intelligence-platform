@@ -56,6 +56,7 @@ record*: what changed, why, its impact, who approved it, and its current status.
 | CR-09 | 31 Oct 2026 | 6 eval labels changed to follow the outcome rule (E13, E14, E24, E41, E44, E47) | Evaluation labels | Apply CR-08 consistently to all 50 labels | Made **after** seeing AI output (risk R07). Mitigated: every change logged, old main kept as secondary, 4 agree and 2 disagree with the AI. Relabel effect about +4 points, prompt effect about +8. | Tez | Implemented | Labelling log · label notes · eval set "what changed" tab |
 | CR-10 | 31 Oct 2026 | Sharpen the Stability / Performance / Design boundaries in the taxonomy | Taxonomy | Remaining misses E20 ("problems loading and connecting") and E34 ("don't like this last update") | Not assessed yet. Would need taxonomy v4 and a re-run. | — | Proposed | Handover §4 |
 | CR-11 | 31 Oct 2026 | Stop the outcome rule overriding the main praise in positive or mixed reviews | Prompt | New misses E02 and E18: a task mentioned in passing (fees, biometrics) was chosen over the main praise for ease of use | Not assessed yet. Would need prompt v4 and a re-run. | — | Proposed | Handover §4 |
+| CR-12 | 31 Oct 2026 | Send LLM batches in parallel instead of one after another | Code / performance | Full run of 2,618 reviews took about 30 minutes against the BRD's 8-minute target | Not assessed yet. Needs care with rate limits (risk R08) and keeping a failed batch isolated. Cost unchanged. | — | Proposed | Case study §10 |
 
 ### Template for a new change
 

@@ -10,6 +10,8 @@ back to real customer quotes.
 
 > **Live demo:** *link added at launch* · **Case study:** [read it](docs/ai-customer-intelligence-platform-09-product-case-study.md)
 
+![Top pain points from 2,618 Santander reviews](docs/screenshots/dashboard-01-top-pain-points.jpg)
+
 ---
 
 ## How it works

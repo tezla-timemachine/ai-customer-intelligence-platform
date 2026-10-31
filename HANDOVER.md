@@ -190,7 +190,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
   10 = change control log.
 - **Change control:** any change to scope, taxonomy, prompt, model, eval
   labels, data or schedule gets a CR row in doc 10 (raise, assess, Tez
-  decides, implement, verify, close). Open proposals: CR-10, CR-11.
+  decides, implement, verify, close). Open proposals: CR-10, CR-11, CR-12.
 - **Versioning:** semantic version in `app/__init__.py` and
   `CHANGELOG.md`. Prompts are `prompts/classify_vN.txt` (old ones kept).
   The taxonomy has a `version`. Each doc has a version in its status line.
@@ -209,7 +209,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 |---|---|---|
 | 1 | ✅ **Done 31 Oct: commit author fixed.** Both of Tez's commits and the v0.4.0 tag were rewritten to `Terence Field <129769377+tezla-timemachine@users.noreply.github.com>`, keeping the original dates, and force-pushed. The repo's git config now uses that identity. **Still to do (Tez, on github.com):** Settings → Emails → tick "Keep my email addresses private" and "Block command line pushes that expose my email". | Tez |
 | 2 | ✅ Outcome rule (D17), prompt v3, re-run done: gate passed. ⏳ Write `…-07-ai-evaluation-results.md` | Together |
-| 3 | Run the dashboard on all 2,618 reviews with the real model; sanity-check the pain points | Tez |
+| 3 | ✅ Done 31 Oct: full run on 2,618 reviews, 0 unclassified, $0.26, ~30 min (over the 8-min target, CR-12). Top pain point: App Updates & Stability. Screenshots in `docs/screenshots/` | Tez |
 | 4 | Run the 26 UAT cases and fill in actual results | Tez |
 | 5 | Deploy to Streamlit Community Cloud (API key in app Secrets); add the live link to the README | Together |
 | 6 | Case study (`…-09-product-case-study.md`), screenshots, README polish | Together |

@@ -1,6 +1,6 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.1 · 31 Oct 2026 · Covers challenge Part 11.
+> **Status:** Draft v0.2 · 31 Oct 2026 · Covers challenge Part 11. v0.2 adds the full-data run and screenshots.
 > Author: Terence Field (Tez), AI Product Manager.
 > Live demo: *to come at launch* · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
@@ -116,7 +116,17 @@ competitor comparison, multi-language support, pushing tickets to Jira,
 fine-tuning, and any AI making prioritisation decisions. The full list is in
 the BRD.
 
-*Screenshots: to come after the full-data run.*
+**Top pain points**, ranked by code, from all 2,618 reviews:
+
+![Top pain points](screenshots/dashboard-01-top-pain-points.jpg)
+
+**Evidence:** opening a pain point shows real customer quotes, with star rating, date, app version and the AI's theme:
+
+![Evidence behind the top pain point](screenshots/dashboard-02-evidence.jpg)
+
+**Trends:** the July 2025 jump in review volume is visible straight away, so a PM can question it:
+
+![Reviews per month](screenshots/dashboard-03-trends.jpg)
 
 ## 7. Evaluation
 
@@ -205,14 +215,46 @@ main category right on 93.5% of the low-star ones.
 - Business results, like time saved per PM, are still assumptions until
   real users try it.
 
-*To come: results on all 2,618 reviews, UAT results, and cost and speed
-per run.*
+### Full-data run: all 2,618 reviews (prompt v3, claude-haiku-5-5)
+
+| Measure | Result | Target |
+|---|---|---|
+| Reviews labelled | **2,618 of 2,618**, none unclassified, no retries | Every review |
+| Low-star reviews the AI couldn't place ("Other") | **3.2%** (30 of 934) | The old topic model left 47% "Undefined" |
+| All reviews in "Other" | 1.9% | Under 10% ✅ |
+| Low-confidence labels (below 0.6) | 273 (10.4%) | Flagged for optional human review |
+| Cost | **$0.26** for the run, about **$0.10 per 1,000 reviews** | Under £1 per 1,000 ✅ |
+| Time | **About 30 minutes** | Under 8 minutes ❌ |
+
+**Top 5 pain points** (negative mentions + ½ × mixed, main or secondary issue):
+
+| # | Pain point | Negative | Mixed | Top theme (AI) |
+|---|---|---|---|---|
+| 1 | App Updates & Stability | 497 | 58 | "app never works" |
+| 2 | Design & Usability | 190 | 80 | "app is confusing" |
+| 3 | Payments & Transfers | 168 | 36 | "cannot edit payees or standing orders" |
+| 4 | Login & Access | 155 | 11 | "unable to get into account" |
+| 5 | Missing Feature | 117 | 66 | "balance widget removed, customer wants it back" |
+
+I checked the quotes behind the top three pain points by hand. Each was a
+genuine complaint about that issue (for example, "the app crashes within 10
+seconds of opening, every time").
+
+**Speed missed its target.** The 131 batches run one after another, and the
+model's thinking takes time on every batch, so the run took nearly four times
+the 8-minute target. Cost was fine: thinking made up most of the output
+tokens, but Haiku is cheap enough that it didn't matter. The fix, sending
+batches in parallel, is logged as a proposed change (CR-12). Results are
+saved, so this is a one-off wait per file, not every time the dashboard
+opens.
+
+*To come: UAT results.*
 
 ## 11. Next iteration
 
 | Next step | Why |
 |---|---|
-| Run the dashboard on all 2,618 reviews | Check the ranked pain points make sense at real volume |
+| Send batches in parallel (CR-12) | The full run took about 30 minutes against an 8-minute target |
 | Run the 26 UAT cases | Prove it works for the user, not just the eval (Part 10) |
 | Deploy to Streamlit Community Cloud | A live link someone else can use (milestone M6) |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |
