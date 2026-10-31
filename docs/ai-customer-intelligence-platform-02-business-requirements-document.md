@@ -227,7 +227,7 @@ Upload CSV
 | Area | Requirement |
 |---|---|
 | **Structured output** | The LLM shall return JSON only, one object per item: `{ "id", "category", "other_categories", "sentiment", "theme", "problem", "confidence" }`. `category` and `sentiment` must be values from the allowed lists. |
-| **Model behaviour** | Temperature 0 (or lowest available) for repeatable labels. The prompt includes the taxonomy with definitions and 1 example per category. The model labels only what the customer said — no guessing intent beyond the text. |
+| **Model behaviour** | Repeatable labels: lowest randomness the provider allows (the current Anthropic SDK offers no temperature setting), verified by the evaluation's duplicate-consistency check. The prompt includes the taxonomy with definitions and 1 example per category. The model labels only what the customer said — no guessing intent beyond the text. |
 | **Multiple issues in one item** | The model returns the *main* category plus up to 3 `other_categories`. Secondary categories must be from the taxonomy, distinct, and never repeat the main one — code enforces this. Every issue a customer raises counts towards the pain-point ranking. |
 | **Very short reviews** | One- or two-word reviews ("good", "rubbish") are still classified (usually Praise, Other, or the aspect named — e.g. "slow" → Performance) but are not expected to produce a meaningful theme. |
 | **Grounding / evidence** | Every insight shown must trace back to real rows. Quotes are pulled from the original file by row ID, never written by the LLM. Opportunity suggestions must reference the pain point(s) they come from. |

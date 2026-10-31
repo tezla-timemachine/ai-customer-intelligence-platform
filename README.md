@@ -74,7 +74,7 @@ docs/                     brief, BRD, architecture, plan, Gantt, risks, UAT
 | 05 | [Gantt Chart](docs/ai-customer-intelligence-platform-05-gantt-chart.png) |
 | 06 | [Risk Register](docs/ai-customer-intelligence-platform-06-risk-register.md) |
 | 08 | [User Acceptance Testing](docs/ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx) |
-| — | [Changelog](CHANGELOG.md) · [Labelling log](evals/labelling-log.md) |
+| — | [Changelog](CHANGELOG.md) · [Labelling log](evals/labelling-log.md) · [Handover](HANDOVER.md) |
 
 Document names include the project name and a number for reading order
 (renamed from the challenge's suggested `BRD.md` style for clarity).

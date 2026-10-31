@@ -13,6 +13,15 @@ and evaluation result.
 - Prompt v3 based on failure analysis
 - Deployment to Streamlit Community Cloud (milestone M6)
 
+## [0.4.1] — 2026-10-31 — First real evaluation run
+### Fixed
+- Anthropic calls work with SDK 2.x: `temperature` is no longer sent (the parameter was removed), and `max_tokens` is raised to 16,000 because model thinking counts towards it. Before this, every call failed and all rows came back Unclassified.
+### Added
+- First evaluation with a real model (claude-haiku-5-5, prompt v2, 50 reviews): **category 80.0%, sentiment 94.0%**. Quality gate fails on category. The lenient score (AI's main category is one of the human's issues) is 94%.
+- `HANDOVER.md`: full project status for anyone picking it up.
+### Changed
+- Decision D9 and the BRD model-behaviour requirement: repeatability is now checked by the evaluation rather than enforced by temperature.
+
 ## [0.4.0] — 2026-10-30 — User acceptance testing
 ### Added
 - UAT document (Part 10): 14 functional and 12 AI-specific test cases, with pass criteria, linked requirements and a summary sheet.
