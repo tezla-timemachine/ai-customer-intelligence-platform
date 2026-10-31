@@ -68,7 +68,7 @@ README (`tezla-timemachine/tezla-timemachine`) as the portfolio front page.
 | 7 | Risk register (12 risks) | ✅ Done | `docs/…-06-risk-register.md` |
 | 8 | Build the MVP | ✅ Built, runs with a real LLM | `app/` |
 | 9 | Evaluation set + eval script | ✅ Labelled, **first real run done** | `evals/` |
-| 9 | Evaluation results write-up | ⏳ **Next:** failure analysis → prompt v3 → re-run | `docs/…-07-ai-evaluation-results.md` (to create) |
+| 9 | Evaluation results write-up | ✅ Prompt v3 passes the gate (92% / 94%). ⏳ **Next:** write doc 07 | `docs/…-07-ai-evaluation-results.md` (to create) |
 | 10 | UAT (26 cases + test files) | ✅ Drafted, ⏳ not yet run | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
 | 11 | Deploy + portfolio + case study | ⏳ Not started | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
 
@@ -110,12 +110,30 @@ unclassified, 44 seconds.
    labelled neutral. The AI's reading is defensible, and this is the
    only sentiment weakness.
 
-**Suggested next step:** agree the main-issue rule (outcome vs cause),
-update the taxonomy and labelling guide, write prompt v3, and re-run.
-Any label changed *after* seeing AI output must be recorded in
-`evals/labelling-log.md` as a post-eval change (bias control, risk R07).
-Report v2 → v3 as a before/after table; the programme's Week 4 asks for
-exactly this.
+### Prompt v3 run (31 Oct 2026): quality gate passed ✅
+
+Tez chose the **outcome** rule (decision D17). Prompt v3 and taxonomy v3 apply it,
+and 6 eval labels were changed to follow it as recorded post-eval changes
+(`evals/labelling-log.md`). Result: `evals/results/20261031-1410_anthropic-claude-haiku-5-5.md`.
+
+| Measure | v2, old labels | v2 answers, new labels | **v3, new labels** | Target |
+|---|---|---|---|---|
+| Category | 80.0% | 84.0% | **92.0%** | ≥ 85% ✅ |
+| Category, low-star only | 74.2% | 77.4% | **93.5%** | ≥ 85% ✅ |
+| Sentiment | 94.0% | 94.0% | **94.0%** | ≥ 85% ✅ |
+
+The middle column re-scores the v2 answers against the new labels. It separates
+the relabel effect (+4 points) from the prompt effect (+8 points). One run, 50
+examples, so each review is worth 2 points.
+
+**Remaining misses (v3):** E02 and E18 are new. The outcome rule picked a task
+mentioned in passing in a positive or mixed review (Fees, Login) over the main
+praise (Design). E20 and E34 are the Stability / Performance / Design boundary
+(failure pattern 2, not yet addressed). Sentiment misses are unchanged: E19,
+E49, E50 labelled neutral.
+
+**Next:** write `…-07-ai-evaluation-results.md` with the v2 → v3 table, then
+the full-data dashboard run.
 
 ---
 
@@ -168,7 +186,11 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 ## 7. Conventions
 
 - **Doc names:** `ai-customer-intelligence-platform-NN-name.ext`, numbered in
-  reading order: 07 = evaluation results, 08 = UAT, 09 = case study.
+  reading order: 07 = evaluation results, 08 = UAT, 09 = case study,
+  10 = change control log.
+- **Change control:** any change to scope, taxonomy, prompt, model, eval
+  labels, data or schedule gets a CR row in doc 10 (raise, assess, Tez
+  decides, implement, verify, close). Open proposals: CR-10, CR-11.
 - **Versioning:** semantic version in `app/__init__.py` and
   `CHANGELOG.md`. Prompts are `prompts/classify_vN.txt` (old ones kept).
   The taxonomy has a `version`. Each doc has a version in its status line.
@@ -186,7 +208,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 | # | Item | Owner |
 |---|---|---|
 | 1 | ✅ **Done 31 Oct: commit author fixed.** Both of Tez's commits and the v0.4.0 tag were rewritten to `Terence Field <129769377+tezla-timemachine@users.noreply.github.com>`, keeping the original dates, and force-pushed. The repo's git config now uses that identity. **Still to do (Tez, on github.com):** Settings → Emails → tick "Keep my email addresses private" and "Block command line pushes that expose my email". | Tez |
-| 2 | Failure analysis → main-issue rule → prompt v3 → re-run, then write `…-07-ai-evaluation-results.md` | Together |
+| 2 | ✅ Outcome rule (D17), prompt v3, re-run done: gate passed. ⏳ Write `…-07-ai-evaluation-results.md` | Together |
 | 3 | Run the dashboard on all 2,618 reviews with the real model; sanity-check the pain points | Tez |
 | 4 | Run the 26 UAT cases and fill in actual results | Tez |
 | 5 | Deploy to Streamlit Community Cloud (API key in app Secrets); add the live link to the README | Together |

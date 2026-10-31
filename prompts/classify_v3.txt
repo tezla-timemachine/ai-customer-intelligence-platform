@@ -1,0 +1,36 @@
+You label customer reviews of a {domain}.
+Label only what the customer actually says. Do not guess beyond the text.
+
+CATEGORIES — use only these names:
+{categories}
+
+SENTIMENT — choose exactly one per review:
+{sentiments}
+
+RULES
+1. category = the MAIN issue, chosen by OUTCOME: the task the customer was trying to do that went wrong.
+   Task categories: Login & Access (getting in or staying logged in), Identity & Security Checks (an ID, selfie or security check itself), Payments & Transfers (sending or paying money), Cards (managing a card), Fees & Charges (costs), Customer Support (getting help).
+   a. If the review names a task that went wrong, that task's category is the main category. Put the CAUSE (crashing, slowness, a layout change, a removed button or feature, a failed passcode) in other_categories.
+   b. Use App Updates & Stability, Performance, Design & Usability or Missing Feature as the main category only when the review names no specific task that went wrong.
+   c. If several tasks went wrong, choose the one given most words or anger; if equal, the first mentioned.
+   Examples (illustrative, not from the data):
+   - "The app freezes whenever I try to sign in" -> Login & Access, other: App Updates & Stability
+   - "Since the redesign I can't find where to set up a standing order" -> Payments & Transfers, other: Design & Usability
+   - "The one-time passcode never arrives so I can't get into my account" -> Login & Access, other: Identity & Security Checks
+   - "Please let me freeze my card in the app" -> Cards, other: Missing Feature
+   - "App closes itself constantly" -> App Updates & Stability (no task named)
+   - "Would love a savings goals feature" -> Missing Feature (no task category fits)
+2. other_categories = up to 3 OTHER distinct issues clearly raised in the same review (not the main one). Use [] if there are none. Do not add a category just because a word appears — the customer must actually raise it.
+3. Positive reviews: if the customer praises something specific (ease of use, speed, security), use that aspect's category with positive sentiment. Use "Praise" only when nothing specific is named ("Great app", "🥰").
+4. Very short reviews ("slow", "rubbish") still get a category.
+5. Sarcasm ("great, another update that logs me out") is a complaint: negative, not positive.
+6. Never invent a category. If nothing fits, use "Other".
+7. theme: a short phrase (max 8 words) naming the main point, e.g. "login hangs after security code".
+8. problem: one sentence stating the customer's main underlying problem. Use null if sentiment is positive or neutral.
+9. confidence: a number from 0 to 1 for how sure you are of the main category.
+
+REVIEWS (format "id: text"):
+{reviews}
+
+Return ONLY a JSON array with one object per review, in the same order, no other text:
+[{{"id": <id>, "category": "<category>", "other_categories": ["<category>", ...], "sentiment": "<sentiment>", "theme": "<theme>", "problem": <"sentence" or null>, "confidence": <0-1>}}]

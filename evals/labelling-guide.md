@@ -51,14 +51,15 @@ Full names work too.
 
 | Situation | Rule |
 |---|---|
-| Several issues | **Main** = the one given most words or anger (if equal, the first mentioned). List the rest in expected_other_categories. |
+| Several issues | **Main = the outcome:** the task the customer was trying to do that went wrong (login, ID check, payments, cards, fees, support). The **cause** (crash, slowness, layout, removed feature) goes in expected_other_categories. If several tasks went wrong: most words or anger, then first mentioned. *(Changed 31 Oct, v3: was "most words or anger".)* |
+| No task named ("keeps crashing", "slow", "confusing layout") | The cause category: App Updates & Stability, Performance or Design & Usability |
 | Praise for something specific ("easy to use", "fast", "feels secure") | That aspect's category, sentiment positive |
 | Praise that names nothing ("Great 👍", "🥰") | Praise, positive |
 | Crashes / won't open | App Updates & Stability (Performance is only for slowness) |
 | "Old app was better" with no detail | Design & Usability, negative |
-| Login fails *because* of an ID/selfie/OTP step | Identity & Security Checks |
-| Login fails for any other reason | Login & Access |
-| A button or feature removed in an update | Missing Feature if they ask for it back; Design & Usability if it's about layout |
+| Login fails, whatever the reason (crash, ID/selfie/OTP step, biometrics) | Login & Access, with the cause as a secondary issue *(changed 31 Oct, v3)* |
+| The ID/selfie check itself fails and no login is mentioned | Identity & Security Checks |
+| A button or feature removed, or a feature request | The task it affects if one is named (e.g. payments button gone -> Payments & Transfers; can't change card PIN -> Cards), with Missing Feature secondary. Otherwise Missing Feature if they want it, Design & Usability if it's about layout *(changed 31 Oct, v3)* |
 | Star rating contradicts the text | Label the **text**, and add a note |
 | Positive review about something that isn't the app (branch staff, fees) | Praise if it's positive overall; Other if it isn't about the app or bank service at all |
 

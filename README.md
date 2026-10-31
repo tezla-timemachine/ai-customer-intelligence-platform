@@ -23,7 +23,7 @@ CSV → validate → redact personal data → LLM labels each review (in batches
 list, plus sentiment, a short theme and the underlying problem. **Everything
 that produces a number, a ranking, a chart or a quote is ordinary code**, so
 the counts are exact and repeatable and quotes can't be invented.
-[Full architecture and the 16 decisions behind it →](docs/ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md)
+[Full architecture and the 17 decisions behind it →](docs/ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md)
 
 ## Run it
 
@@ -74,6 +74,7 @@ docs/                     brief, BRD, architecture, plan, Gantt, risks, UAT
 | 05 | [Gantt Chart](docs/ai-customer-intelligence-platform-05-gantt-chart.png) |
 | 06 | [Risk Register](docs/ai-customer-intelligence-platform-06-risk-register.md) |
 | 08 | [User Acceptance Testing](docs/ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx) |
+| 10 | [Change Control Log](docs/ai-customer-intelligence-platform-10-change-control-log.md) |
 | — | [Changelog](CHANGELOG.md) · [Labelling log](evals/labelling-log.md) · [Handover](HANDOVER.md) |
 
 Document names include the project name and a number for reading order

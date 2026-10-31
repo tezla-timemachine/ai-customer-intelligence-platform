@@ -9,8 +9,15 @@ Prompt versions live in `prompts/` and are recorded against every analysis run
 and evaluation result.
 
 ## [Unreleased]
-- First evaluation run with a real LLM (milestone M4)
-- Prompt v3 based on failure analysis
+### Changed
+- **Prompt v3 and taxonomy v3:** the main issue is now chosen by *outcome*, the task the customer was trying to do that went wrong. The cause becomes a secondary issue (decision D17). Prompt v2 is kept for comparison.
+- **Evaluation set:** 6 main-category labels changed to follow the outcome rule (E13, E14, E24, E41, E44, E47). They are recorded as post-eval changes in `evals/labelling-log.md` and in each row's label notes.
+- Labelling guide updated to the outcome rule.
+### Added
+- Decision D17 and a dated decision history (§3.1) in the architecture and decision log.
+- Change control log (doc 10): every change to scope, taxonomy, prompt, model, labels, data or schedule gets a change record (CR-01 to CR-11, back-filled from 30 Oct).
+- Eval run with prompt v3: **category 92.0%, sentiment 94.0%. The quality gate passes (milestone M4).** Low-star category accuracy rose from 74.2% to 93.5%.
+### Planned
 - Deployment to Streamlit Community Cloud (milestone M6)
 
 ## [0.4.1] — 2026-10-31 — First real evaluation run

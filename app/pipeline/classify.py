@@ -21,7 +21,7 @@ from . import llm
 
 ROOT = Path(__file__).resolve().parents[2]
 TAXONOMY_PATH = ROOT / "config" / "taxonomy.yaml"
-PROMPT_PATH = ROOT / "prompts" / "classify_v2.txt"  # v2: multi-issue + specific praise
+PROMPT_PATH = ROOT / "prompts" / "classify_v3.txt"  # v3: main issue chosen by outcome (the task that went wrong)
 PROMPT_VERSION = PROMPT_PATH.stem
 BATCH_SIZE = 20
 UNCLASSIFIED = "Unclassified"

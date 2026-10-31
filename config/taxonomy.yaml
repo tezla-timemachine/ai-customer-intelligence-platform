@@ -1,7 +1,8 @@
 # Controlled taxonomy (BRD §2.5, decisions D4/D5/D7).
 # v2: Praise only for non-specific praise; multi-issue reviews get other_categories.
+# v3: main issue chosen by OUTCOME (the task that went wrong); the cause goes in other_categories.
 # Edit this file to change categories — no code changes needed.
-version: 2
+version: 3
 domain: UK banking mobile app reviews
 categories:
 - name: Login & Access
@@ -9,7 +10,7 @@ categories:
   example: Unable to logon, put in security number and it just sits doing nothing
 - name: Identity & Security Checks
   definition: ID verification, selfies, photo ID, verification codes / one-time passcodes, fraud checks, feeling safe — problems
-    or praise.
+    or praise. If the check stops the customer logging in, the main issue is Login & Access and this is secondary.
   example: have to take photos of my self and driving licence to authorise my account
 - name: App Updates & Stability
   definition: Updates, crashes, freezing, install failures, bugs, the app not opening or not working.
@@ -28,7 +29,8 @@ categories:
     — problems or praise.
   example: only half the screen can show accounts info while the rest is wasted
 - name: Missing Feature
-  definition: A specific feature the app lacks, or one that was removed and the customer wants back.
+  definition: A specific feature the app lacks, or one that was removed and the customer wants back. Main category only when
+    no task category (login, payments, cards, etc.) fits; otherwise it is secondary.
   example: No payment notifications
 - name: Fees & Charges
   definition: Fees, charges, interest and savings rates, exchange rates, overdraft costs.
@@ -54,5 +56,7 @@ sentiments:
   definition: Both genuine praise and a genuine complaint in the same review.
 multi_issue:
   max_other_categories: 3
-  rule: category = the MAIN issue (most words or anger; if equal, first mentioned). other_categories = any other distinct
-    issues clearly raised.
+  rule: category = the MAIN issue, chosen by OUTCOME - the task the customer was trying to do that went wrong (login, ID
+    check, payments, cards, fees, support). The cause (crash, slowness, layout, removed feature) goes in other_categories.
+    Stability, Performance, Design or Missing Feature are main only when no task is named. Several tasks -> most words or
+    anger, then first mentioned.

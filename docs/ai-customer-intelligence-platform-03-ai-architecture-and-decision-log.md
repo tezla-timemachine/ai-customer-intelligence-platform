@@ -127,6 +127,19 @@ time.)*
 | D14 | **SQLite for storage** | Postgres; no storage (recompute each time) | Zero setup, a single file, enough for thousands of rows. Saving results means a page refresh never re-runs (and re-pays for) the analysis. Postgres is the upgrade path if multi-user is added. |
 | D15 | **Deploy on Streamlit Community Cloud** | Railway; Hugging Face Spaces | Free, deploys straight from GitHub, built for Streamlit apps — gives a live link for the portfolio. Railway (already used for other projects) is the fallback if limits are hit. |
 | D16 | **Keep the old topic-model labels only for comparison** | Feed them into the LLM as hints; ignore them | Feeding them in would bias the LLM towards a model we're trying to beat. Keeping them aside gives an honest, measurable baseline. |
+| D17 | **Main issue chosen by outcome: the task the customer was trying to do that went wrong** *(added 31 Oct after the first eval run; replaces "most words or anger")* | Most words or anger (prompt v2); by cause (what broke in the app) | The first eval run (prompt v2) scored 80% on category, but 7 of the 10 misses were the AI choosing a different *main* issue from the human, not missing the issue (lenient score 94%). The human labels mixed two rules: E10 was labelled by outcome ("can't send money" → Payments), E14 by cause ("app keeps stopping" → Stability). Outcome was chosen because the product ranks **customer pain points**: a PM needs to know customers can't log in or pay, and the cause still counts as a secondary issue, so engineering sees it too. Cause categories (Stability, Performance, Design, Missing Feature) are main only when no task is named. Implemented in prompt v3 and taxonomy v3; 6 eval labels changed to follow it (see `evals/labelling-log.md`). |
+
+
+### 3.1 Decision history
+
+A dated record of when decisions were made or changed, who made them, and the evidence. New decisions and revisions are added here as well as in the table above.
+
+| Date | Decision | Change | Decided by | Evidence |
+|---|---|---|---|---|
+| 30 Oct 2026 | D1–D16 | Initial architecture decisions | Tez | Brief, BRD, dataset profiling |
+| 30 Oct 2026 | D7 | Single-label → main + up to 3 secondary categories | Tez | Labelling the eval set: 20 of 50 reviews raised several issues |
+| 31 Oct 2026 | D9 | "Temperature 0" → repeatability measured by the eval | Tez | Anthropic SDK 2.x removed the temperature setting; duplicates 100% consistent in the first run |
+| 31 Oct 2026 | D17 | Main issue chosen by outcome, not "most words or anger" | Tez | First eval run: 7 of 10 category misses were main-vs-secondary swaps; human labels mixed outcome and cause |
 
 ---
 
