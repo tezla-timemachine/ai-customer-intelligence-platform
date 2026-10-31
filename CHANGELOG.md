@@ -15,6 +15,7 @@ and evaluation result.
 - Labelling guide updated to the outcome rule.
 ### Added
 - Decision D17 and a dated decision history (§3.1) in the architecture and decision log.
+- Product case study, draft v0.1 (doc 09): problem, user, AI opportunity, decisions, architecture, MVP, evaluation, what failed, what changed, results and next iteration.
 - Change control log (doc 10): every change to scope, taxonomy, prompt, model, labels, data or schedule gets a change record (CR-01 to CR-11, back-filled from 30 Oct).
 - Eval run with prompt v3: **category 92.0%, sentiment 94.0%. The quality gate passes (milestone M4).** Low-star category accuracy rose from 74.2% to 93.5%.
 ### Planned

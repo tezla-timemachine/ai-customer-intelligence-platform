@@ -8,7 +8,7 @@ Built on **2,618 real Google Play reviews of the Santander UK banking app
 unclassified**. This platform labels every review and links every insight
 back to real customer quotes.
 
-> **Live demo:** *link added at launch* · **Case study:** [docs](docs/)
+> **Live demo:** *link added at launch* · **Case study:** [read it](docs/ai-customer-intelligence-platform-09-product-case-study.md)
 
 ---
 
@@ -74,6 +74,7 @@ docs/                     brief, BRD, architecture, plan, Gantt, risks, UAT
 | 05 | [Gantt Chart](docs/ai-customer-intelligence-platform-05-gantt-chart.png) |
 | 06 | [Risk Register](docs/ai-customer-intelligence-platform-06-risk-register.md) |
 | 08 | [User Acceptance Testing](docs/ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx) |
+| 09 | [Product Case Study](docs/ai-customer-intelligence-platform-09-product-case-study.md) |
 | 10 | [Change Control Log](docs/ai-customer-intelligence-platform-10-change-control-log.md) |
 | — | [Changelog](CHANGELOG.md) · [Labelling log](evals/labelling-log.md) · [Handover](HANDOVER.md) |
 

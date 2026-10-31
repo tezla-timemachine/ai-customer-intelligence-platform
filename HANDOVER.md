@@ -70,7 +70,7 @@ README (`tezla-timemachine/tezla-timemachine`) as the portfolio front page.
 | 9 | Evaluation set + eval script | ✅ Labelled, **first real run done** | `evals/` |
 | 9 | Evaluation results write-up | ✅ Prompt v3 passes the gate (92% / 94%). ⏳ **Next:** write doc 07 | `docs/…-07-ai-evaluation-results.md` (to create) |
 | 10 | UAT (26 cases + test files) | ✅ Drafted, ⏳ not yet run | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
-| 11 | Deploy + portfolio + case study | ⏳ Not started | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
+| 11 | Deploy + portfolio + case study | ✅ Case study draft v0.1 written. ⏳ Deploy, screenshots, full-data results | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
 
 ---
 
