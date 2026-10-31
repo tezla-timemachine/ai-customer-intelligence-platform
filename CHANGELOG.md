@@ -20,6 +20,7 @@ and evaluation result.
 - Eval run with prompt v3: **category 92.0%, sentiment 94.0%. The quality gate passes (milestone M4).** Low-star category accuracy rose from 74.2% to 93.5%.
 - Full-data run on all 2,618 reviews (prompt v3): every review labelled, 1.9% "Other", **$0.26 for the run (about $0.10 per 1,000 reviews)**, about 30 minutes. Speed misses the 8-minute target (CR-12 proposed).
 - Dashboard screenshots in `docs/screenshots/`, used in the case study (now draft v0.2) and the README.
+- UAT run (26 cases): **22 pass, 3 fail, 1 not run. All 12 AI cases pass.** Fails: full-run speed (UAT-06), summary numbers ignore filters (UAT-09), unreadable rating chart (UAT-12). Results, and a new Defects sheet, are in the UAT workbook. Fixes proposed as CR-13.
 ### Planned
 - Deployment to Streamlit Community Cloud (milestone M6)
 

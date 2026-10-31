@@ -69,7 +69,7 @@ README (`tezla-timemachine/tezla-timemachine`) as the portfolio front page.
 | 8 | Build the MVP | ✅ Built, runs with a real LLM | `app/` |
 | 9 | Evaluation set + eval script | ✅ Labelled, **first real run done** | `evals/` |
 | 9 | Evaluation results write-up | ✅ Prompt v3 passes the gate (92% / 94%). ⏳ **Next:** write doc 07 | `docs/…-07-ai-evaluation-results.md` (to create) |
-| 10 | UAT (26 cases + test files) | ✅ Drafted, ⏳ not yet run | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
+| 10 | UAT (26 cases + test files) | ✅ Run 31 Oct: 22 pass / 3 fail / 1 not run · ⏳ sign-off | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
 | 11 | Deploy + portfolio + case study | ✅ Case study draft v0.1 written. ⏳ Deploy, screenshots, full-data results | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
 
 ---
@@ -190,7 +190,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
   10 = change control log.
 - **Change control:** any change to scope, taxonomy, prompt, model, eval
   labels, data or schedule gets a CR row in doc 10 (raise, assess, Tez
-  decides, implement, verify, close). Open proposals: CR-10, CR-11, CR-12.
+  decides, implement, verify, close). Open proposals: CR-10 to CR-13.
 - **Versioning:** semantic version in `app/__init__.py` and
   `CHANGELOG.md`. Prompts are `prompts/classify_vN.txt` (old ones kept).
   The taxonomy has a `version`. Each doc has a version in its status line.
@@ -210,7 +210,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 | 1 | ✅ **Done 31 Oct: commit author fixed.** Both of Tez's commits and the v0.4.0 tag were rewritten to `Terence Field <129769377+tezla-timemachine@users.noreply.github.com>`, keeping the original dates, and force-pushed. The repo's git config now uses that identity. **Still to do (Tez, on github.com):** Settings → Emails → tick "Keep my email addresses private" and "Block command line pushes that expose my email". | Tez |
 | 2 | ✅ Outcome rule (D17), prompt v3, re-run done: gate passed. ⏳ Write `…-07-ai-evaluation-results.md` | Together |
 | 3 | ✅ Done 31 Oct: full run on 2,618 reviews, 0 unclassified, $0.26, ~30 min (over the 8-min target, CR-12). Top pain point: App Updates & Stability. Screenshots in `docs/screenshots/` | Tez |
-| 4 | Run the 26 UAT cases and fill in actual results | Tez |
+| 4 | ✅ UAT run 31 Oct: 22 pass, 3 fail (UAT-06 speed, UAT-09 summary numbers, UAT-12 chart), 1 not run (UAT-14 needs a new user). All 12 AI cases pass. ⏳ Fix (CR-12, CR-13) or agree workarounds, run UAT-14, then sign off M5 | Tez |
 | 5 | Deploy to Streamlit Community Cloud (API key in app Secrets); add the live link to the README | Together |
 | 6 | Case study (`…-09-product-case-study.md`), screenshots, README polish | Together |
 | 7 | Refresh the Gantt dates to the real progress | Together |

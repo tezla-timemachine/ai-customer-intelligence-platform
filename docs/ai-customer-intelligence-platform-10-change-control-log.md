@@ -57,6 +57,7 @@ record*: what changed, why, its impact, who approved it, and its current status.
 | CR-10 | 31 Oct 2026 | Sharpen the Stability / Performance / Design boundaries in the taxonomy | Taxonomy | Remaining misses E20 ("problems loading and connecting") and E34 ("don't like this last update") | Not assessed yet. Would need taxonomy v4 and a re-run. | — | Proposed | Handover §4 |
 | CR-11 | 31 Oct 2026 | Stop the outcome rule overriding the main praise in positive or mixed reviews | Prompt | New misses E02 and E18: a task mentioned in passing (fees, biometrics) was chosen over the main praise for ease of use | Not assessed yet. Would need prompt v4 and a re-run. | — | Proposed | Handover §4 |
 | CR-12 | 31 Oct 2026 | Send LLM batches in parallel instead of one after another | Code / performance | Full run of 2,618 reviews took about 30 minutes against the BRD's 8-minute target | Not assessed yet. Needs care with rate limits (risk R08) and keeping a failed batch isolated. Cost unchanged. | — | Proposed | Case study §10 |
+| CR-13 | 31 Oct 2026 | Fix the UAT dashboard defects: summary numbers follow filters (DEF-01), readable rating chart (DEF-02), app versions sorted and labelled (DEF-03), small display fixes (DEF-04 to DEF-06) | Code / UI | UAT run, 31 Oct: UAT-09 and UAT-12 failed on these | Dashboard code only; no AI or cost impact. Re-run UAT-09 and UAT-12 after. | — | Proposed | UAT workbook, Defects sheet |
 
 ### Template for a new change
 

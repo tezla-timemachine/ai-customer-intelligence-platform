@@ -1,6 +1,6 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.2 · 31 Oct 2026 · Covers challenge Part 11. v0.2 adds the full-data run and screenshots.
+> **Status:** Draft v0.3 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 adds UAT results.
 > Author: Terence Field (Tez), AI Product Manager.
 > Live demo: *to come at launch* · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
@@ -248,14 +248,44 @@ batches in parallel, is logged as a proposed change (CR-12). Results are
 saved, so this is a one-off wait per file, not every time the dashboard
 opens.
 
-*To come: UAT results.*
+### User acceptance testing (UAT)
+
+26 test cases (14 functional, 12 AI-specific), run in the dashboard against
+the real model on 31 Oct 2026. Full results:
+[UAT workbook](ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx).
+
+| | Pass | Fail | Not run |
+|---|---|---|---|
+| Functional | 10 | 3 | 1 |
+| AI-specific | **12** | 0 | 0 |
+| **Total** | **22** | **3** | **1** |
+
+- **Every AI case passed:** mixed sentiment, sarcasm, multiple issues, very
+  short reviews, duplicates, off-topic complaints and specific praise. So did
+  the trust checks: personal data was replaced with [EMAIL], [NUMBER] and
+  [PHONE] before reaching the AI, all 10 evidence quotes matched the source
+  word for word, every fact in the AI's opportunity suggestions traced back
+  to a real review, and a broken API key gave a clear error without saving
+  a bad run.
+- **The three fails are about the dashboard, not the AI:**
+  - Speed: about 30 minutes for the full file (CR-12).
+  - The summary numbers at the top don't follow the filters.
+  - One trends chart is unreadable, because rating and percentage share an
+    axis.
+  Six small defects are logged in the workbook's Defects sheet.
+- **Not run:** the first-time-user test needs someone who has never seen the
+  app.
+- **Exit criteria not yet met.** UAT-06 (speed) is one of the cases that must
+  not be left as an open failure. Before sign-off (milestone M5), I need to
+  fix it or agree a workaround: results are saved, so the wait is once per
+  file.
 
 ## 11. Next iteration
 
 | Next step | Why |
 |---|---|
 | Send batches in parallel (CR-12) | The full run took about 30 minutes against an 8-minute target |
-| Run the 26 UAT cases | Prove it works for the user, not just the eval (Part 10) |
+| Fix the UAT defects (CR-13) and run the first-time-user test | Three minor dashboard fails and one test that needs a new user (Part 10) |
 | Deploy to Streamlit Community Cloud | A live link someone else can use (milestone M6) |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |
 | Sharpen the Stability / Performance / Design boundaries (CR-10) | Two remaining misses |
