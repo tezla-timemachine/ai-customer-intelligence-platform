@@ -3,6 +3,9 @@
 The LLM only labels text. Every object it returns is validated with Pydantic;
 a bad batch is retried once, then its rows are marked 'Unclassified'.
 No row is ever silently dropped.
+
+Batches are sent in parallel (CR-12), up to LLM_MAX_CONCURRENCY at a time
+(default 5). Each batch is still independent: a failure affects only its rows.
 """
 from __future__ import annotations
 
@@ -10,6 +13,7 @@ import json
 import os
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Literal, Optional
@@ -25,6 +29,14 @@ PROMPT_PATH = ROOT / "prompts" / "classify_v3.txt"  # v3: main issue chosen by o
 PROMPT_VERSION = PROMPT_PATH.stem
 BATCH_SIZE = 20
 UNCLASSIFIED = "Unclassified"
+
+
+def max_concurrency() -> int:
+    """How many batches to send at once (CR-12). 1 restores one-at-a-time."""
+    try:
+        return max(1, int(os.getenv("LLM_MAX_CONCURRENCY", "5")))
+    except ValueError:
+        return 5
 
 
 def load_taxonomy(path: Path = TAXONOMY_PATH) -> dict:
@@ -103,23 +115,48 @@ def classify(rows: list[tuple[str, str]], taxonomy: dict | None = None,
     start = time.time()
     results: dict[str, dict] = {}
     batches = [rows[i:i + BATCH_SIZE] for i in range(0, len(rows), BATCH_SIZE)]
+
+    # Build every prompt (and the audit log) up front, in order, before any call is made.
+    jobs = []
     for n, batch in enumerate(batches, 1):
         ids = [str(r[0]) for r in batch]
         prompt = build_prompt([(str(i), t) for i, t in batch], taxonomy)
         if os.getenv("LOG_PROMPTS") == "1":  # audit trail: exactly what was sent to the LLM (UAT-21)
             with open(ROOT / "data" / "prompt_log.txt", "a") as fh:
                 fh.write(f"\n===== batch {n} =====\n{prompt}\n")
+        jobs.append((n, ids, prompt))
+
+    def run_batch(n: int, ids: list[str], prompt: str):
+        """One batch, retried once. Runs in a worker thread, so it only returns data."""
         labels: dict[str, Label] = {}
+        errors: list[str] = []
+        retried = False
         for attempt in (1, 2):
             try:
                 got = parse_and_check(llm.complete(prompt), ids, allowed)
                 labels.update({k: v for k, v in got.items() if k not in labels})
             except Exception as exc:  # bad JSON or API error
-                stats.errors.append(f"batch {n} attempt {attempt}: {exc}")
+                errors.append(f"batch {n} attempt {attempt}: {exc}")
             if len(labels) == len(ids):
                 break
             if attempt == 1:
-                stats.retries += 1  # some rows missing/invalid -> retry the batch once
+                retried = True  # some rows missing/invalid -> retry the batch once
+        return labels, errors, retried
+
+    # Send batches in parallel (CR-12); progress is reported here, on the caller's thread.
+    outcomes: dict[int, tuple] = {}
+    with ThreadPoolExecutor(max_workers=min(max_concurrency(), max(1, len(jobs)))) as pool:
+        futures = {pool.submit(run_batch, n, ids, prompt): n for n, ids, prompt in jobs}
+        for done, fut in enumerate(as_completed(futures), 1):
+            outcomes[futures[fut]] = fut.result()
+            if progress:
+                progress(done / len(jobs))
+
+    # Assemble in the original batch order, so results never depend on timing.
+    for n, ids, _ in jobs:
+        labels, errors, retried = outcomes[n]
+        stats.errors.extend(errors)
+        stats.retries += int(retried)
         for rid in ids:
             if labels and rid in labels:
                 d = labels[rid].model_dump()
@@ -129,8 +166,6 @@ def classify(rows: list[tuple[str, str]], taxonomy: dict | None = None,
                 stats.unclassified += 1
                 results[rid] = {"id": rid, "category": UNCLASSIFIED, "other_categories": "", "sentiment": None,
                                 "theme": None, "problem": None, "confidence": 0.0}
-        stats.batches = n
-        if progress:
-            progress(n / len(batches))
+    stats.batches = len(jobs)
     stats.seconds = round(time.time() - start, 1)
     return results, stats

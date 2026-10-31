@@ -1,6 +1,6 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.3 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 adds UAT results.
+> **Status:** Draft v0.4 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix.
 > Author: Terence Field (Tez), AI Product Manager.
 > Live demo: *to come at launch* · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
@@ -224,7 +224,7 @@ main category right on 93.5% of the low-star ones.
 | All reviews in "Other" | 1.9% | Under 10% ✅ |
 | Low-confidence labels (below 0.6) | 273 (10.4%) | Flagged for optional human review |
 | Cost | **$0.26** for the run, about **$0.10 per 1,000 reviews** | Under £1 per 1,000 ✅ |
-| Time | **About 30 minutes** | Under 8 minutes ❌ |
+| Time | **6.1 minutes** after the speed fix (first run: about 30 minutes) | Under 8 minutes ✅ |
 
 **Top 5 pain points** (negative mentions + ½ × mixed, main or secondary issue):
 
@@ -240,13 +240,21 @@ I checked the quotes behind the top three pain points by hand. Each was a
 genuine complaint about that issue (for example, "the app crashes within 10
 seconds of opening, every time").
 
-**Speed missed its target.** The 131 batches run one after another, and the
-model's thinking takes time on every batch, so the run took nearly four times
-the 8-minute target. Cost was fine: thinking made up most of the output
-tokens, but Haiku is cheap enough that it didn't matter. The fix, sending
-batches in parallel, is logged as a proposed change (CR-12). Results are
-saved, so this is a one-off wait per file, not every time the dashboard
-opens.
+**Speed first missed its target, then was fixed.** The first full run sent
+131 batches one after another, and the model thinks before every answer, so
+it took about 30 minutes against an 8-minute target. The fix (CR-12) sends 5
+batches at once. My first attempt sent 8 at once and hit the account's limit
+of 80,000 output tokens per minute. That limit counts each request's
+*maximum* reply size up front, not what it actually uses, so 78 reviews
+failed. Lowering the maximum reply size and sending 5 at a time fixed it:
+**6.1 minutes, nothing unclassified, same cost and same accuracy.** The
+lesson for a PM: API rate limits are a product constraint, and they belong in
+the plan, not just the code.
+
+**Repeatability.** Two full runs agreed on the main category for 95.5% of
+reviews and on sentiment for 98.8%, with the same top 5 pain points. The
+model can no longer be set to answer identically every time, so a small
+amount of run-to-run variation is expected. The ranking a PM sees is stable.
 
 ### User acceptance testing (UAT)
 
@@ -256,9 +264,9 @@ the real model on 31 Oct 2026. Full results:
 
 | | Pass | Fail | Not run |
 |---|---|---|---|
-| Functional | 10 | 3 | 1 |
+| Functional | 11 | 2 | 1 |
 | AI-specific | **12** | 0 | 0 |
-| **Total** | **22** | **3** | **1** |
+| **Total** | **23** | **2** | **1** |
 
 - **Every AI case passed:** mixed sentiment, sarcasm, multiple issues, very
   short reviews, duplicates, off-topic complaints and specific praise. So did
@@ -267,24 +275,23 @@ the real model on 31 Oct 2026. Full results:
   word for word, every fact in the AI's opportunity suggestions traced back
   to a real review, and a broken API key gave a clear error without saving
   a bad run.
-- **The three fails are about the dashboard, not the AI:**
-  - Speed: about 30 minutes for the full file (CR-12).
+- **Speed (UAT-06) failed first, then passed** after the CR-12 fix: 6.1
+  minutes for the full file.
+- **The two remaining fails are about the dashboard, not the AI:**
   - The summary numbers at the top don't follow the filters.
   - One trends chart is unreadable, because rating and percentage share an
     axis.
-  Six small defects are logged in the workbook's Defects sheet.
+  Six small defects are logged in the workbook's Defects sheet (CR-13).
 - **Not run:** the first-time-user test needs someone who has never seen the
   app.
-- **Exit criteria not yet met.** UAT-06 (speed) is one of the cases that must
-  not be left as an open failure. Before sign-off (milestone M5), I need to
-  fix it or agree a workaround: results are saved, so the wait is once per
-  file.
+- **Before sign-off (milestone M5):** all the must-pass cases now pass
+  (UAT-06, 08, 21, 22, 24). Still to do: fix or agree workarounds for UAT-09
+  and UAT-12 (CR-13), and run UAT-14 with a first-time user.
 
 ## 11. Next iteration
 
 | Next step | Why |
 |---|---|
-| Send batches in parallel (CR-12) | The full run took about 30 minutes against an 8-minute target |
 | Fix the UAT defects (CR-13) and run the first-time-user test | Three minor dashboard fails and one test that needs a new user (Part 10) |
 | Deploy to Streamlit Community Cloud | A live link someone else can use (milestone M6) |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |

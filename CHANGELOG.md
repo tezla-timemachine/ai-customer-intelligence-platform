@@ -21,6 +21,7 @@ and evaluation result.
 - Full-data run on all 2,618 reviews (prompt v3): every review labelled, 1.9% "Other", **$0.26 for the run (about $0.10 per 1,000 reviews)**, about 30 minutes. Speed misses the 8-minute target (CR-12 proposed).
 - Dashboard screenshots in `docs/screenshots/`, used in the case study (now draft v0.2) and the README.
 - UAT run (26 cases): **22 pass, 3 fail, 1 not run. All 12 AI cases pass.** Fails: full-run speed (UAT-06), summary numbers ignore filters (UAT-09), unreadable rating chart (UAT-12). Results, and a new Defects sheet, are in the UAT workbook. Fixes proposed as CR-13.
+- **Speed fix (CR-12):** LLM batches are sent in parallel (5 at once), `max_tokens` lowered to 12,000 and SDK retries raised to 6, all tunable in `.env`. Full run 30 min → 6.1 min; eval 38 s → 18.6 s; cost and accuracy unchanged. UAT-06 re-tested and now passes (UAT: 23 pass, 2 fail, 1 not run). 3 new tests (22 in total).
 ### Planned
 - Deployment to Streamlit Community Cloud (milestone M6)
 

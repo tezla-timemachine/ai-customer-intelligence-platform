@@ -28,17 +28,29 @@ def model_name() -> str:
     return os.getenv("LLM_MODEL", DEFAULT_MODELS.get(provider(), "unknown"))
 
 
+def _int_env(name: str, default: int) -> int:
+    try:
+        return max(1, int(os.getenv(name, default)))
+    except ValueError:
+        return default
+
+
 def complete(prompt: str) -> str:
     """Send one prompt, return the raw text response."""
     p = provider()
     if p == "anthropic":
         import anthropic
-        client = anthropic.Anthropic()
+        # Rate limits (429) are retried by the SDK, which waits as the API's retry-after header says.
+        # Batches run in parallel (CR-12), so allow more retries than the SDK's default of 2.
+        client = anthropic.Anthropic(max_retries=_int_env("LLM_MAX_RETRIES", 6))
         # anthropic SDK 2.x removed the `temperature` parameter, so it is not sent here.
         # Repeatability (D9) is checked by the eval's duplicate-consistency measure instead.
-        # The model's thinking counts towards max_tokens; 4000 truncated a 20-review batch mid-JSON.
+        # max_tokens: the model's thinking counts towards it (4000 cut a batch off mid-JSON; a
+        # 20-review batch uses ~3,500 on average). The API's output-tokens-per-minute limit also
+        # counts each request's max_tokens up front, so parallel requests × max_tokens must stay
+        # under the account's limit (80,000/min here): 5 × 12,000 = 60,000.
         msg = client.messages.create(
-            model=model_name(), max_tokens=16000,
+            model=model_name(), max_tokens=_int_env("LLM_MAX_TOKENS", 12000),
             messages=[{"role": "user", "content": prompt}],
         )
         return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")

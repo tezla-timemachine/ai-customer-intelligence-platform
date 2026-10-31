@@ -140,6 +140,7 @@ A dated record of when decisions were made or changed, who made them, and the ev
 | 30 Oct 2026 | D7 | Single-label → main + up to 3 secondary categories | Tez | Labelling the eval set: 20 of 50 reviews raised several issues |
 | 31 Oct 2026 | D9 | "Temperature 0" → repeatability measured by the eval | Tez | Anthropic SDK 2.x removed the temperature setting; duplicates 100% consistent in the first run |
 | 31 Oct 2026 | D17 | Main issue chosen by outcome, not "most words or anger" | Tez | First eval run: 7 of 10 category misses were main-vs-secondary swaps; human labels mixed outcome and cause |
+| 31 Oct 2026 | D6 | Batches of ~20 now sent **in parallel** (5 at once) instead of one after another (CR-12) | Tez | Full run took ~30 min against an 8-min target; now 6.1 min. Two full runs agreed on 95.5% of main categories and 98.8% of sentiments, so repeatability (D9) is high but not perfect |
 
 ---
 

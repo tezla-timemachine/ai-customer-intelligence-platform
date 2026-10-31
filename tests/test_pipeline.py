@@ -146,3 +146,49 @@ def test_secondary_issues_count_in_pain_points(labelled):
     assert r.loc["Login & Access", "as_main_issue"] == 2
     ev = aggregate.evidence(df, "Performance")
     assert list(ev["id"]) == ["a"] and not ev["is_main"].iloc[0]
+
+
+# --- parallel batches (CR-12) ------------------------------------------------
+def _mock_ok(prompt):
+    """Valid labels for every review in the prompt, with no network call."""
+    return llm._mock(prompt)
+
+
+def test_parallel_batches_return_every_id_in_order(monkeypatch):
+    monkeypatch.setattr(llm, "complete", _mock_ok)
+    rows = [(str(i), "Can't log in" if i % 2 else "Great app") for i in range(95)]  # 5 batches
+    seen = []
+    labels, stats = classify.classify(rows, progress=seen.append)
+    assert list(labels) == [str(i) for i in range(95)]  # original order, whatever finished first
+    assert stats.batches == 5 and stats.unclassified == 0
+    assert seen[-1] == 1.0 and len(seen) == 5
+
+
+def test_one_failing_batch_does_not_affect_the_others(monkeypatch):
+    def flaky(prompt):
+        return "not json" if "\n40: " in prompt else _mock_ok(prompt)  # review 40 sits in batch 3
+    monkeypatch.setattr(llm, "complete", flaky)
+    rows = [(str(i), "Great app") for i in range(60)]
+    labels, stats = classify.classify(rows)
+    bad = {k for k, v in labels.items() if v["category"] == classify.UNCLASSIFIED}
+    assert bad == {str(i) for i in range(40, 60)}  # only batch 3's 20 rows
+    assert stats.unclassified == 20 and stats.retries == 1
+
+
+def test_batches_really_run_at_the_same_time(monkeypatch):
+    import threading, time
+    live, peak, lock = [0], [0], threading.Lock()
+    def slow(prompt):
+        with lock:
+            live[0] += 1; peak[0] = max(peak[0], live[0])
+        time.sleep(0.2)
+        with lock:
+            live[0] -= 1
+        return _mock_ok(prompt)
+    monkeypatch.setattr(llm, "complete", slow)
+    monkeypatch.setenv("LLM_MAX_CONCURRENCY", "4")
+    rows = [(str(i), "Great app") for i in range(160)]  # 8 batches
+    t = time.time()
+    classify.classify(rows)
+    assert peak[0] == 4  # never more than the limit
+    assert time.time() - t < 1.2  # 8 × 0.2 s one at a time would take 1.6 s
