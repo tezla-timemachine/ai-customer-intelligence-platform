@@ -34,8 +34,11 @@ def complete(prompt: str) -> str:
     if p == "anthropic":
         import anthropic
         client = anthropic.Anthropic()
+        # anthropic SDK 2.x removed the `temperature` parameter, so it is not sent here.
+        # Repeatability (D9) is checked by the eval's duplicate-consistency measure instead.
+        # The model's thinking counts towards max_tokens; 4000 truncated a 20-review batch mid-JSON.
         msg = client.messages.create(
-            model=model_name(), max_tokens=4000, temperature=0,
+            model=model_name(), max_tokens=16000,
             messages=[{"role": "user", "content": prompt}],
         )
         return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
