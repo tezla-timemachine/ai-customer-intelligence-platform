@@ -1,12 +1,14 @@
-streamlit>=1.40
-pandas>=2.2
-pyarrow>=15
-plotly>=5.20
-pydantic>=2.6
-pyyaml>=6.0
-openpyxl>=3.1
-tabulate>=0.9
-anthropic>=0.40
-openai>=1.40
-pytest>=8.0
-python-dotenv>=1.0
+# Pinned to the versions tested on 31 Oct 2026 (CR-14), so the cloud deployment
+# installs exactly what passed the tests, eval and UAT. Upgrade deliberately.
+streamlit==1.65.0
+pandas==2.3.3
+pyarrow==25.0.1
+plotly==7.1.0
+pydantic==2.14.2
+pyyaml==6.0.3
+openpyxl==3.1.5
+tabulate==0.10.0
+anthropic==2.3.0
+openai==3.41.0
+pytest==9.2.0
+python-dotenv==1.2.4

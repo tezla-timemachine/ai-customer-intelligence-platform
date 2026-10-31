@@ -44,6 +44,21 @@ whole flow can be tried, and the screen clearly says it isn't AI output.
 | `python evals/run_eval.py` | Accuracy against the human-labelled evaluation set |
 | `python docs/ai-customer-intelligence-platform-05-make-gantt-chart.py` | Redraws the Gantt chart from the schedule CSV |
 
+### Deploy (Streamlit Community Cloud)
+
+Main file `app/streamlit_app.py`, branch `main`. Paste these into the app's
+**Secrets** (never into the repo):
+
+```toml
+LLM_PROVIDER = "anthropic"
+LLM_MODEL = "claude-haiku-5-5"
+ANTHROPIC_API_KEY = "..."
+```
+
+The sample analysis ships with the code in `data/precomputed/`, so the demo
+loads instantly and costs nothing. New uploads call the AI and are billed to
+the key in Secrets, so set a monthly spend limit in the Anthropic Console.
+
 ## Repository
 
 ```

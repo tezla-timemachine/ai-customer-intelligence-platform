@@ -10,6 +10,9 @@ from pathlib import Path
 import pandas as pd
 
 DB_PATH = Path(__file__).resolve().parents[2] / "data" / "results.db"
+# Finished results shipped with the code (CR-14), named by file hash. Used when the database has no
+# saved run, e.g. on a fresh cloud deployment, so the sample loads instantly and costs nothing.
+PRECOMPUTED_DIR = Path(__file__).resolve().parents[2] / "data" / "precomputed"
 
 
 def _conn(path: Path = DB_PATH) -> sqlite3.Connection:
@@ -28,13 +31,32 @@ def file_hash(raw: bytes, provider: str, model: str, prompt_version: str) -> str
     return h.hexdigest()[:16]
 
 
-def find_run(fhash: str, path: Path = DB_PATH) -> pd.DataFrame | None:
+def find_run(fhash: str, path: Path = DB_PATH, precomputed_dir: Path = PRECOMPUTED_DIR) -> pd.DataFrame | None:
+    with _conn(path) as con:
+        row = con.execute("SELECT run_id FROM runs WHERE file_hash=? ORDER BY created_at DESC LIMIT 1", (fhash,)).fetchone()
+        if row:
+            return pd.read_sql(f'SELECT * FROM "labels_{row[0]}"', con, parse_dates=["date"])
+    # No saved run: fall back to shipped results for exactly this file + model + prompt (CR-14).
+    shipped = precomputed_dir / f"{fhash}.csv"
+    if shipped.exists():
+        df = pd.read_csv(shipped, dtype={"id": str, "segment": str, "other_categories": str}, parse_dates=["date"])
+        df["other_categories"] = df["other_categories"].fillna("")  # CSV turns "" into NaN; keep it as saved
+        save_run(df, fhash, shipped.name, {"source": "precomputed"}, path)
+        return df
+    return None
+
+
+def export_run(fhash: str, path: Path = DB_PATH, precomputed_dir: Path = PRECOMPUTED_DIR) -> Path:
+    """Write the latest saved run for this hash to data/precomputed/, ready to ship."""
     with _conn(path) as con:
         row = con.execute("SELECT run_id FROM runs WHERE file_hash=? ORDER BY created_at DESC LIMIT 1", (fhash,)).fetchone()
         if not row:
-            return None
-        df = pd.read_sql(f'SELECT * FROM "labels_{row[0]}"', con, parse_dates=["date"])
-    return df
+            raise LookupError("No saved run for this file, model and prompt.")
+        df = pd.read_sql(f'SELECT * FROM "labels_{row[0]}"', con)
+    precomputed_dir.mkdir(parents=True, exist_ok=True)
+    out = precomputed_dir / f"{fhash}.csv"
+    df.to_csv(out, index=False)
+    return out
 
 
 def save_run(df: pd.DataFrame, fhash: str, filename: str, stats: dict, path: Path = DB_PATH) -> str:

@@ -210,3 +210,18 @@ def test_segment_chart_in_release_order():
     df = pd.DataFrame({"id": range(6), "segment": ["24.0", "8.0", "16.1", "24.0", "8.0", "16.1"],
                        "sentiment": ["negative", "positive"] * 3, "rating": [1, 5, 2, 4, 3, 5]})
     assert list(aggregate.by_segment(df)["segment"]) == ["8.0", "16.1", "24.0"]
+
+
+# --- shipped results (CR-14) -------------------------------------------------------
+def test_shipped_results_load_when_no_saved_run(tmp_path):
+    from app.pipeline import storage
+    df = pd.DataFrame({"id": ["1", "2"], "date": pd.to_datetime(["2025-07-01", "2025-07-02"]), "feedback": ["a", "b"],
+                       "rating": [1, 5], "segment": ["24.0", None], "category": ["Login & Access", "Praise"],
+                       "other_categories": ["Performance", ""], "sentiment": ["negative", "positive"],
+                       "theme": ["t", "t"], "problem": ["p", None], "confidence": [0.9, 0.8]})
+    db, ship = tmp_path / "a.db", tmp_path / "precomputed"
+    storage.save_run(df, "abc123", "x.csv", {}, db)
+    storage.export_run("abc123", db, ship)
+    got = storage.find_run("abc123", tmp_path / "fresh.db", ship)  # empty database -> shipped file
+    assert list(got["id"]) == ["1", "2"] and list(got["other_categories"]) == ["Performance", ""]
+    assert storage.find_run("other-hash", tmp_path / "fresh.db", ship) is None  # different file/model/prompt: not used
