@@ -1,6 +1,6 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.4 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix.
+> **Status:** Draft v0.5 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix; v0.5 the dashboard fixes.
 > Author: Terence Field (Tez), AI Product Manager.
 > Live demo: *to come at launch* · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
@@ -127,6 +127,12 @@ the BRD.
 **Trends:** the July 2025 jump in review volume is visible straight away, so a PM can question it:
 
 ![Reviews per month](screenshots/dashboard-03-trends.jpg)
+
+**Rating and problem share by month:** ratings jump from about 2.4 to 4.4 in
+July 2025, and problem reviews drop from about 72% to 18%, exactly when
+volume jumps. That's the pattern that suggests in-app rating prompts:
+
+![Average rating and problem share by month](screenshots/dashboard-04-rating-and-problem-share.jpg)
 
 ## 7. Evaluation
 
@@ -264,9 +270,9 @@ the real model on 31 Oct 2026. Full results:
 
 | | Pass | Fail | Not run |
 |---|---|---|---|
-| Functional | 11 | 2 | 1 |
+| Functional | 13 | 0 | 1 |
 | AI-specific | **12** | 0 | 0 |
-| **Total** | **23** | **2** | **1** |
+| **Total** | **25** | **0** | **1** |
 
 - **Every AI case passed:** mixed sentiment, sarcasm, multiple issues, very
   short reviews, duplicates, off-topic complaints and specific praise. So did
@@ -277,22 +283,21 @@ the real model on 31 Oct 2026. Full results:
   a bad run.
 - **Speed (UAT-06) failed first, then passed** after the CR-12 fix: 6.1
   minutes for the full file.
-- **The two remaining fails are about the dashboard, not the AI:**
-  - The summary numbers at the top don't follow the filters.
-  - One trends chart is unreadable, because rating and percentage share an
-    axis.
-  Six small defects are logged in the workbook's Defects sheet (CR-13).
+- **Two dashboard fails (UAT-09, UAT-12) were fixed and passed on re-test**
+  (CR-13). The summary numbers now follow the filters ("showing 10 of
+  2,618"), and rating and problem share have their own charts. All six
+  defects in the workbook's Defects sheet are fixed.
 - **Not run:** the first-time-user test needs someone who has never seen the
   app.
-- **Before sign-off (milestone M5):** all the must-pass cases now pass
-  (UAT-06, 08, 21, 22, 24). Still to do: fix or agree workarounds for UAT-09
-  and UAT-12 (CR-13), and run UAT-14 with a first-time user.
+- **Before sign-off (milestone M5):** every case I can run passes. Only
+  UAT-14 is left: a first-time user has to find the biggest problem without
+  help.
 
 ## 11. Next iteration
 
 | Next step | Why |
 |---|---|
-| Fix the UAT defects (CR-13) and run the first-time-user test | Three minor dashboard fails and one test that needs a new user (Part 10) |
+| Run the first-time-user test (UAT-14), then sign off UAT | The last open UAT case (Part 10, milestone M5) |
 | Deploy to Streamlit Community Cloud | A live link someone else can use (milestone M6) |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |
 | Sharpen the Stability / Performance / Design boundaries (CR-10) | Two remaining misses |

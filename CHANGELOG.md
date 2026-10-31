@@ -22,6 +22,8 @@ and evaluation result.
 - Dashboard screenshots in `docs/screenshots/`, used in the case study (now draft v0.2) and the README.
 - UAT run (26 cases): **22 pass, 3 fail, 1 not run. All 12 AI cases pass.** Fails: full-run speed (UAT-06), summary numbers ignore filters (UAT-09), unreadable rating chart (UAT-12). Results, and a new Defects sheet, are in the UAT workbook. Fixes proposed as CR-13.
 - **Speed fix (CR-12):** LLM batches are sent in parallel (5 at once), `max_tokens` lowered to 12,000 and SDK retries raised to 6, all tunable in `.env`. Full run 30 min → 6.1 min; eval 38 s → 18.6 s; cost and accuracy unchanged. UAT-06 re-tested and now passes (UAT: 23 pass, 2 fail, 1 not run). 3 new tests (22 in total).
+- **Dashboard fixes (CR-13):** summary numbers follow the filters and say "showing X of Y"; rating and problem share have separate charts; app versions are sorted by number and plotted as labels; "version unknown" replaces "vNone"; a hint explains the date range; "Use sample data" re-ticks when an upload is removed; the AI-unavailable error is in plain English, with technical details in an expander. 3 new tests (25 in total). UAT-09 and UAT-12 re-tested and pass: **UAT 25 pass, 0 fail, 1 not run.**
+- New screenshot: rating and problem share by month.
 ### Planned
 - Deployment to Streamlit Community Cloud (milestone M6)
 

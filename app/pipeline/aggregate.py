@@ -5,10 +5,34 @@ selection. No LLM is involved, so the numbers are exact and repeatable.
 """
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 
 PROBLEM_SENTIMENTS = ("negative", "mixed")
 NON_ISSUE = ("Praise", "Unclassified", "Other")  # "Other" is shown separately as a taxonomy-health signal
+
+
+def _missing(v) -> bool:
+    return v is None or (isinstance(v, float) and pd.isna(v)) or str(v).strip().lower() in ("", "none", "nan")
+
+
+def version_key(v) -> tuple:
+    """Sort app versions as numbers, not text: 8.0 < 24.0 < 30.0 < 30.0 (79). (DEF-03)"""
+    m = re.match(r"\s*(\d+(?:\.\d+)*)\s*(?:\((\d+)\))?", str(v)) if not _missing(v) else None
+    if not m:
+        return (1, (), -1, str(v))  # unparseable values sort after real versions
+    return (0, tuple(int(x) for x in m.group(1).split(".")), int(m.group(2)) if m.group(2) else -1, "")
+
+
+def sort_versions(values, newest_first: bool = True) -> list:
+    """Distinct app versions in numeric order, for the filter list."""
+    return sorted({v for v in values if not _missing(v)}, key=version_key, reverse=newest_first)
+
+
+def version_label(v) -> str:
+    """How a version is shown next to a quote: 'v24.0', or 'version unknown'. (DEF-04)"""
+    return "version unknown" if _missing(v) else f"v{v}"
 
 
 def by_column(df: pd.DataFrame, col: str) -> pd.DataFrame:
@@ -84,11 +108,15 @@ def by_segment(df: pd.DataFrame, top_segments: int = 6) -> pd.DataFrame:
     seg = df.dropna(subset=["segment"])
     keep = seg["segment"].value_counts().head(top_segments).index
     seg = seg[seg["segment"].isin(keep)]
-    return seg.groupby("segment").agg(
+    out = seg.groupby("segment").agg(
         reviews=("id", "size"),
         problem_share=("sentiment", lambda s: round(s.isin(PROBLEM_SENTIMENTS).mean() * 100, 1)),
         avg_rating=("rating", lambda s: round(s.mean(), 2)),
-    ).reset_index().sort_values("reviews", ascending=False)
+    ).reset_index()
+    # Busiest versions are kept, but shown in release order, as text labels (DEF-03).
+    out = out.iloc[sorted(range(len(out)), key=lambda i: version_key(out["segment"].iloc[i]))].reset_index(drop=True)
+    out["segment"] = out["segment"].astype(str)
+    return out
 
 
 def baseline_comparison(df: pd.DataFrame, baseline: pd.DataFrame) -> dict:

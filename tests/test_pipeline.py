@@ -192,3 +192,21 @@ def test_batches_really_run_at_the_same_time(monkeypatch):
     classify.classify(rows)
     assert peak[0] == 4  # never more than the limit
     assert time.time() - t < 1.2  # 8 × 0.2 s one at a time would take 1.6 s
+
+
+# --- dashboard fixes (CR-13) ---------------------------------------------------
+def test_app_versions_sort_as_numbers_not_text():
+    vals = ["8.0", "30.0 (79)", "24.0", "30.0", "16.1", "16.0", None, "nan", "6.0"]
+    assert aggregate.sort_versions(vals) == ["30.0 (79)", "30.0", "24.0", "16.1", "16.0", "8.0", "6.0"]
+
+
+def test_missing_version_is_labelled_not_vnone():
+    assert aggregate.version_label(None) == "version unknown"
+    assert aggregate.version_label(float("nan")) == "version unknown"
+    assert aggregate.version_label("24.0") == "v24.0"
+
+
+def test_segment_chart_in_release_order():
+    df = pd.DataFrame({"id": range(6), "segment": ["24.0", "8.0", "16.1", "24.0", "8.0", "16.1"],
+                       "sentiment": ["negative", "positive"] * 3, "rating": [1, 5, 2, 4, 3, 5]})
+    assert list(aggregate.by_segment(df)["segment"]) == ["8.0", "16.1", "24.0"]
