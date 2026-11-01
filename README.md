@@ -25,6 +25,11 @@ CSV → validate → redact personal data → LLM labels each review (in batches
 list, plus sentiment, a short theme and the underlying problem. **Everything
 that produces a number, a ranking, a chart or a quote is ordinary code**, so
 the counts are exact and repeatable and quotes can't be invented.
+
+The dashboard leads with the answer (the biggest problem), explains every
+category and sentiment, and has an **Action summary** that tells Engineering,
+Product and Operations what to look at first: example themes, related issues,
+app versions, trend and a real quote, downloadable as Markdown for tickets.
 [Full architecture and the 17 decisions behind it →](docs/ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md)
 
 ## Run it
@@ -75,6 +80,7 @@ app/
     storage.py            step 7 · SQLite: saved runs, no re-analysis on refresh
     opportunities.py      optional · AI opportunity suggestions, clearly labelled
 config/taxonomy.yaml      the 12 categories: edit here, not in code
+config/teams.yaml         suggested owner team per category (Action summary page only, not sent to the AI)
 prompts/classify_v1.txt   versioned prompt
 evals/                    evaluation set, labelling guide, eval script, results
 data/                     working dataset (Santander Jan–Sep 2025) + old-model labels

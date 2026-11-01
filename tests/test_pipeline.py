@@ -225,3 +225,68 @@ def test_shipped_results_load_when_no_saved_run(tmp_path):
     got = storage.find_run("abc123", tmp_path / "fresh.db", ship)  # empty database -> shipped file
     assert list(got["id"]) == ["1", "2"] and list(got["other_categories"]) == ["Performance", ""]
     assert storage.find_run("other-hash", tmp_path / "fresh.db", ship) is None  # different file/model/prompt: not used
+
+
+# --- plain-English signposting (CR-16) ---------------------------------------------
+def test_headline_names_the_biggest_problem(labelled):
+    text = aggregate.headline(aggregate.pain_points(labelled), len(labelled))
+    assert text.startswith("**Biggest problem: Login & Access.**") and f"{len(labelled):,} reviews in view" in text
+    assert aggregate.headline(pd.DataFrame(), 10) == "No problem reviews in this selection."
+
+
+def test_glossaries_cover_every_category_and_sentiment():
+    tax = classify.load_taxonomy()
+    cats = aggregate.category_glossary(tax)
+    assert set(cats["Category"]) == ALLOWED | {"Unclassified"} and cats["What it covers"].str.len().gt(0).all()
+    sents = aggregate.sentiment_glossary(tax)
+    assert list(sents["Sentiment"]) == ["negative", "mixed", "neutral", "positive"]
+    assert sents["What it means"].str.len().gt(0).all()
+
+
+# --- action summary (CR-17) ---------------------------------------------------------
+def _action_df():
+    dates = pd.to_datetime(["2025-01-10", "2025-02-10", "2025-03-10", "2025-04-10", "2025-05-10", "2025-06-10"] * 2)
+    return pd.DataFrame({
+        "id": [str(i) for i in range(12)], "date": dates, "feedback": [f"review {i}" for i in range(12)],
+        "rating": [1] * 12, "segment": ["24.0"] * 6 + [None] * 6,
+        # Login problems only in the later three months: a rising pain point.
+        "category": ["Praise"] * 3 + ["Login & Access"] * 3 + ["Praise"] * 3 + ["Customer Support"] * 3,
+        "other_categories": ["", "", "", "App Updates & Stability", "", "", "", "", "", "", "", ""],
+        "sentiment": ["positive"] * 3 + ["negative"] * 3 + ["positive"] * 3 + ["negative"] * 3,
+        "theme": [f"theme {i}" for i in range(12)], "problem": ["p"] * 12, "confidence": [0.9] * 12})
+
+
+def test_every_pain_point_has_an_owner_and_next_step():
+    teams = aggregate.load_teams()
+    assert set(teams["owners"]) <= ALLOWED, "teams.yaml names a category that is not in the taxonomy"
+    assert set(teams["owners"].values()) <= set(teams["teams"])
+    acts = aggregate.action_summary(_action_df(), teams).set_index("category")
+    assert acts.loc["Login & Access", "team"] == "Engineering"
+    assert acts.loc["Customer Support", "team"] == "Operations"
+    assert acts["next_step"].str.len().gt(0).all()
+
+
+def test_action_summary_trend_versions_and_related_issues():
+    acts = aggregate.action_summary(_action_df(), aggregate.load_teams()).set_index("category")
+    login = acts.loc["Login & Access"]
+    assert login["trend"] == "Rising ↑" and "Apr–Jun 2025" in login["trend_detail"]
+    assert login["versions"] == "v24.0 (3)"
+    assert login["raised_with"] == "App Updates & Stability (1)"
+    assert acts.loc["Customer Support", "versions"] == "not recorded"
+    md = aggregate.action_summary_markdown(acts.reset_index(), "Test")
+    assert "## Engineering" in md and "## Operations" in md and "Often raised together with" in md
+
+
+def test_action_summary_flags_unclear_trend_when_volume_jumps():
+    # Few reviews early (all complaints), many later (mostly praise): the count rises but the share falls.
+    early = [("2025-01-05", "negative")] * 2 + [("2025-02-05", "negative")] * 2
+    late = [("2025-03-05", "negative")] * 3 + [("2025-03-06", "positive")] * 3 + \
+           [("2025-04-05", "negative")] * 3 + [("2025-04-06", "positive")] * 3
+    rows = early + late
+    df = pd.DataFrame({"id": [str(i) for i in range(len(rows))], "date": pd.to_datetime([d for d, _ in rows]),
+                       "feedback": ["x"] * len(rows), "rating": [1] * len(rows), "segment": ["1.0"] * len(rows),
+                       "category": ["Cards" if s == "negative" else "Praise" for _, s in rows],
+                       "other_categories": [""] * len(rows), "sentiment": [s for _, s in rows],
+                       "theme": ["t"] * len(rows), "problem": ["p"] * len(rows), "confidence": [0.9] * len(rows)})
+    cards = aggregate.action_summary(df, aggregate.load_teams()).set_index("category").loc["Cards"]
+    assert cards["trend"] == "Unclear ↕" and "compare with care" in cards["trend_detail"]

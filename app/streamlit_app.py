@@ -83,8 +83,14 @@ with st.sidebar:
     dmin, dmax = df["date"].min().date(), df["date"].max().date()
     dr = st.date_input("Date range", (dmin, dmax), min_value=dmin, max_value=dmax)
     st.caption("Pick a start and an end date, then click outside the box to apply.")  # DEF-05
-    cats = st.multiselect("Category", sorted(df["category"].dropna().unique()))
-    sents = st.multiselect("Sentiment", ["negative", "mixed", "neutral", "positive"])
+    cats = st.multiselect("Category", sorted(df["category"].dropna().unique()),
+                          help="The topic of a customer's issue, e.g. Cards or Login & Access. Matches a review's main "
+                               "issue or any other issue it raises. Definitions: 'What do the categories and sentiments "
+                               "mean?' at the top of the page.")
+    sents = st.multiselect("Sentiment", ["negative", "mixed", "neutral", "positive"],
+                           help="**negative**: only complaints · **mixed**: praise and a complaint · **neutral**: "
+                                "factual, no clear feeling · **positive**: only praise. Negative and mixed reviews "
+                                "count as problem reviews.")
     segs = st.multiselect("App version", aggregate.sort_versions(df["segment"]))  # numeric order, newest first (DEF-03)
 f = df.copy()
 if isinstance(dr, tuple) and len(dr) == 2:
@@ -95,14 +101,37 @@ if sents: f = f[f["sentiment"].isin(sents)]
 if segs: f = f[f["segment"].isin(segs)]
 filtered = len(f) < len(df)
 
+# --- Answer first and signposting (CR-16) -------------------------------------
+ranked = aggregate.pain_points(f) if not f.empty else pd.DataFrame()
+if not f.empty:
+    st.success(aggregate.headline(ranked, len(f)) +
+               ("  \nOpen it under **Top pain points** below to read what customers actually said." if not ranked.empty else ""),
+               icon="🎯")
+st.markdown("**How to read this page:** ① **Top pain points** ranks customer problems, worst first. "
+            "② Click a pain point to read real customer quotes. "
+            "③ Use the filters in the left-hand menu (tap **»** at the top left on a phone) to narrow by date, "
+            "category, sentiment or app version.")
+with st.expander("📖 What do the categories and sentiments mean?"):
+    taxonomy = load_taxonomy()
+    st.markdown("**Categories:** what a review is about. Each review gets one main category, plus up to 3 others "
+                "if it raises several issues.")
+    st.table(aggregate.category_glossary(taxonomy).set_index("Category"))  # st.table wraps long text
+    st.markdown("**Sentiments:** how the customer feels. Negative and mixed reviews count as **problem reviews**.")
+    st.table(aggregate.sentiment_glossary(taxonomy).set_index("Sentiment"))
+
 # --- Run summary (FR-15, transparency NFR): follows the filters (DEF-01) ------
 unclassified = int((f["category"] == "Unclassified").sum())
 low_conf = int((f["confidence"] < 0.6).sum())
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Reviews in view" if filtered else "Reviews analysed", f"{len(f):,}")
-c2.metric("Problem reviews (negative/mixed)", f"{f['sentiment'].isin(aggregate.PROBLEM_SENTIMENTS).sum():,}")
-c3.metric("Unclassified", f"{unclassified:,}")
-c4.metric("Low confidence (<0.6)", f"{low_conf:,}")
+c1, c2 = st.columns(2)
+c1.metric("Reviews in view" if filtered else "Reviews analysed", f"{len(f):,}",
+          help="Customer reviews included in everything on this page.")
+c2.metric("Problem reviews", f"{f['sentiment'].isin(aggregate.PROBLEM_SENTIMENTS).sum():,}",
+          help="Reviews where the customer complains: negative, or mixed (praise and a complaint).")
+# Data quality stays visible (transparency NFR), but small, with its meaning spelled out.
+low_pct = f" ({low_conf / len(f):.0%})" if len(f) else ""
+st.caption(f"**Data quality:** {unclassified:,} unclassified (the AI couldn't label them) · "
+           f"{low_conf:,} low-confidence labels{low_pct}, where the AI was less than 60% sure. "
+           "Low-confidence labels are still counted; read their quotes before relying on a small category.")
 if filtered:
     st.caption(f"🔎 Filters on: showing **{len(f):,} of {len(df):,}** reviews in the file. Every number, chart, quote and export below uses this selection.")
 st.caption(f"Validation: {report.summary()}" + (" · results loaded from saved run" if st.session_state.cached else
@@ -110,11 +139,10 @@ st.caption(f"Validation: {report.summary()}" + (" · results loaded from saved r
 if f.empty:
     st.warning("No reviews match these filters."); st.stop()
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 Top pain points", "📊 Breakdown", "📈 Trends", "⬇️ Export"])
+tab1, tab_act, tab2, tab3, tab4 = st.tabs(["🎯 Top pain points", "🛠️ Action summary", "📊 Breakdown", "📈 Trends", "⬇️ Export"])
 
 # --- Top pain points + evidence (FR-09, FR-10) ------------------------------
 with tab1:
-    ranked = aggregate.pain_points(f)
     if ranked.empty:
         st.info("No negative or mixed reviews in this selection.")
     else:
@@ -125,7 +153,11 @@ with tab1:
         if other_share > 10:
             st.warning(f"{other_share:.0f}% of reviews fell into 'Other' (target < 10%) — the taxonomy may need a new category.")
         fig = px.bar(ranked.iloc[::-1], x="score", y="category", orientation="h",
-                     hover_data=["negative", "mixed", "pct_of_all", "avg_rating"], labels={"score": "Pain score", "category": ""})
+                     custom_data=["negative", "mixed", "pct_of_all", "avg_rating"], labels={"score": "Pain score", "category": ""})
+        fig.update_traces(hovertemplate="<b>%{y}</b><br>%{customdata[0]} negative and %{customdata[1]} mixed reviews"
+                                        "<br>In %{customdata[2]}% of all reviews in view"
+                                        "<br>Average star rating: %{customdata[3]:.1f} out of 5"
+                                        "<br>Pain score: %{x} (negative + half of mixed)<extra></extra>")
         fig.update_layout(height=60 + 38 * len(ranked), margin=dict(l=0, r=0, t=10, b=0))
         st.plotly_chart(fig, width="stretch")
         for i, r in ranked.iterrows():
@@ -143,6 +175,38 @@ with tab1:
             st.session_state.opps = opportunities.suggest(f, ranked, load_taxonomy()["domain"])
         for o in st.session_state.get("opps") or []:
             st.markdown(f"**{o['pain_point']}** → {o['opportunity']}  \n<small>Why: {o['why']}</small>", unsafe_allow_html=True)
+
+# --- Action summary for Engineering / Product / Operations (CR-17) -----------
+with tab_act:
+    st.subheader("Action summary")
+    st.caption("What each team should look at first. Counted by code from the labelled reviews, with no extra AI calls. "
+               "Suggested owners come from `config/teams.yaml` and are a starting point for triage, not a decision. "
+               "Follows the filters on the left.")
+    actions = aggregate.action_summary(f, aggregate.load_teams())
+    if actions.empty:
+        st.info("No problem reviews in this selection, so there is nothing to action.")
+    else:
+        team_counts = actions["team"].value_counts()
+        pick = st.radio("Show actions for", ["All teams"] + list(team_counts.index), horizontal=True,
+                        format_func=lambda t: t if t == "All teams" else f"{t} ({team_counts[t]})")
+        view = actions if pick == "All teams" else actions[actions["team"] == pick]
+        for team, grp in view.groupby("team", sort=False):
+            st.markdown(f"#### {team}")
+            st.caption(f"Suggested next step: {grp['next_step'].iloc[0]}")
+            for a in grp.itertuples():
+                with st.container(border=True):
+                    st.markdown(f"**#{a.rank} {a.category}** · {a.negative} negative, {a.mixed} mixed "
+                                f"({a.pct_of_all}% of reviews) · **{a.trend}**")
+                    st.markdown(f"- **What customers describe (examples):** {a.themes or 'no themes recorded'}\n"
+                                f"- **Often raised together with:** {a.raised_with}\n"
+                                f"- **App versions most reported:** {a.versions}\n"
+                                f"- **Trend:** {a.trend_detail}")
+                    if a.quote:
+                        st.markdown(f"> {a.quote.strip()[:300]}")
+        title = f"Action summary: {name}" + (" (filtered)" if filtered else "")
+        st.download_button("Download action summary (Markdown, for tickets or Slack)",
+                           aggregate.action_summary_markdown(view, title).encode(),
+                           file_name="action_summary.md", mime="text/markdown")
 
 # --- Breakdown (FR-08, FR-12) -----------------------------------------------
 with tab2:

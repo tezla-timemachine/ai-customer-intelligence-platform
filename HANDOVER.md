@@ -154,6 +154,10 @@ CSV → validate (code) → redact personal data (code) → batches of 20 → LL
   *and* secondary issues. Praise, Other and Unclassified are excluded.
 - **Providers:** `LLM_PROVIDER=anthropic | openai | mock`. Mock uses keyword
   rules and has no AI, for tests only.
+- **Action summary (CR-17):** a dashboard tab that groups the ranked pain
+  points by suggested owner team (`config/teams.yaml`: Engineering, Product,
+  Operations), with example themes, issues raised together, app versions,
+  trend and a quote. Code only, no AI calls. Downloadable as Markdown.
 
 Key decisions are in the decision log (D1–D16). The ones to know:
 LLM only labels, code counts (D2) · structured JSON + schema check (D3) ·
@@ -213,6 +217,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 | 2 | ✅ Outcome rule (D17), prompt v3, re-run done: gate passed. ⏳ Write `…-07-ai-evaluation-results.md` | Together |
 | 3 | ✅ Done 31 Oct: full run on 2,618 reviews, 0 unclassified, $0.26. Now 6.1 min after CR-12 (was ~30). Top pain point: App Updates & Stability. Screenshots in `docs/screenshots/` | Tez |
 | 4 | ✅ UAT 31 Oct: 25 pass, 0 fail, 1 not run. UAT-06 fixed by CR-12, UAT-09 and UAT-12 by CR-13. ⏳ Run UAT-14 with a first-time user (colleague or mentor), then fill in the sign-off on the Overview sheet (M5) | Tez |
+| 4b | ✅ Done 1 Nov: first-look feedback on the live app (hard-to-read hover box, unexplained low-confidence number, no category or sentiment definitions, weak signposting) fixed as DEF-07 to DEF-10 (CR-16). Action summary page for Engineering / Product / Operations added (CR-17). ⏳ Push, so the live app picks them up; then run UAT-14 on the new version | Tez |
 | 5 | ✅ Done 1 Nov: deployed to Streamlit Community Cloud (https://ai-customer-intelligence-version1.streamlit.app), API key in app Secrets, live link in README and case study (CR-15). ⏳ Set a monthly spend limit in the Anthropic Console; share the link with 2–3 testers (T22) | Tez |
 | 6 | Case study (`…-09-product-case-study.md`), screenshots, README polish | Together |
 | 7 | Refresh the Gantt dates to the real progress | Together |

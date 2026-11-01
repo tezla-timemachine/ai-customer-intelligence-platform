@@ -1,0 +1,23 @@
+# Who looks at each pain point first (CR-17). Used only by the Action summary page:
+# it is NOT sent to the AI, so changing it never changes labels or eval results.
+# A suggested owner is a starting point for triage, not a decision.
+version: 1
+teams:
+  Engineering:
+    next_step: Reproduce on the app versions listed, then check crash reports, logs and release notes for those versions.
+  Product:
+    next_step: Read the quotes and themes, then decide whether it is a journey fix, a missing feature or a policy question, and size it.
+  Operations:
+    next_step: Share the themes with the support and branch leads, and compare with contact-centre data for the same months.
+owners:
+  App Updates & Stability: Engineering
+  Performance: Engineering
+  Login & Access: Engineering
+  Identity & Security Checks: Product
+  Payments & Transfers: Product
+  Cards: Product
+  Design & Usability: Product
+  Missing Feature: Product
+  Fees & Charges: Product
+  Customer Support: Operations
+default_owner: Product
