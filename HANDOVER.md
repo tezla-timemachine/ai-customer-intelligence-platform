@@ -202,7 +202,8 @@ eval's duplicate-consistency measure rather than enforced by temperature.
   The taxonomy has a `version`. Each doc has a version in its status line.
   Git tags per release.
 - **Secrets:** `.env` is git-ignored. Never commit keys, `data/df_final.parquet`
-  or `data/results.db`.
+  or `data/results.db`. Saved runs in `results.db` are deleted after 24 hours
+  (CR-18), so don't rely on it to keep results: ship them with `export_run` instead.
 - **Working style Tez prefers:** plain English, one step at a time,
   concrete examples, no jargon dumps. The AI drafts and flags decisions
   that should be Tez's, then Tez pushes back. Tez is UK-based.
@@ -218,6 +219,7 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 | 3 | ✅ Done 31 Oct: full run on 2,618 reviews, 0 unclassified, $0.26. Now 6.1 min after CR-12 (was ~30). Top pain point: App Updates & Stability. Screenshots in `docs/screenshots/` | Tez |
 | 4 | ✅ UAT 31 Oct: 25 pass, 0 fail, 1 not run. UAT-06 fixed by CR-12, UAT-09 and UAT-12 by CR-13. ⏳ Run UAT-14 with a first-time user (colleague or mentor), then fill in the sign-off on the Overview sheet (M5) | Tez |
 | 4b | ✅ Done 1 Nov: first-look feedback on the live app (hard-to-read hover box, unexplained low-confidence number, no category or sentiment definitions, weak signposting) fixed as DEF-07 to DEF-10 (CR-16). Action summary page for Engineering / Product / Operations added (CR-17). ⏳ Push, so the live app picks them up; then run UAT-14 on the new version | Tez |
+| 4c | ✅ Done 1 Nov: **privacy gap fixed (CR-18).** Saved results, which hold the original review text, are now deleted after 24 hours (`storage.purge_old_runs`), as the BRD privacy requirement says. The shipped sample is unaffected. ⏳ Push, so the live app picks it up | Tez |
 | 5 | ✅ Done 1 Nov: deployed to Streamlit Community Cloud (https://ai-customer-intelligence-version1.streamlit.app), API key in app Secrets, live link in README and case study (CR-15). ⏳ Set a monthly spend limit in the Anthropic Console; share the link with 2–3 testers (T22) | Tez |
 | 6 | Case study (`…-09-product-case-study.md`), screenshots, README polish | Together |
 | 7 | Refresh the Gantt dates to the real progress | Together |

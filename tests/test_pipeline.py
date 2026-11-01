@@ -227,6 +227,35 @@ def test_shipped_results_load_when_no_saved_run(tmp_path):
     assert storage.find_run("other-hash", tmp_path / "fresh.db", ship) is None  # different file/model/prompt: not used
 
 
+
+# --- delete saved uploads after 24 hours (CR-18) -------------------------------------
+def test_saved_runs_are_deleted_after_24_hours(tmp_path):
+    import sqlite3
+    from datetime import datetime, timedelta, timezone
+    from app.pipeline import storage
+    db, ship = tmp_path / "a.db", tmp_path / "precomputed"
+    df = pd.DataFrame({"id": ["1"], "feedback": ["my private complaint"], "category": ["Cards"]})
+    storage.save_run(df, "upload1", "mine.csv", {}, db)
+    later = datetime.now(timezone.utc)
+    assert storage.purge_old_runs(db, now=later + timedelta(hours=23)) == 0  # still inside 24 hours: kept
+    assert storage.find_run("upload1", db, ship) is not None
+    assert storage.purge_old_runs(db, now=later + timedelta(hours=25)) == 1  # past 24 hours: deleted
+    with sqlite3.connect(db) as con:
+        tables = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        assert tables == {"runs"} and con.execute("SELECT COUNT(*) FROM runs").fetchone()[0] == 0
+    assert b"my private complaint" not in db.read_bytes()  # text is overwritten on disk, not just unlinked
+
+
+def test_shipped_sample_survives_the_24_hour_purge(tmp_path):
+    from datetime import datetime, timedelta, timezone
+    from app.pipeline import storage
+    db, ship = tmp_path / "a.db", tmp_path / "precomputed"
+    df = pd.DataFrame({"id": ["1"], "date": pd.to_datetime(["2025-07-01"]), "other_categories": [""]})
+    storage.save_run(df, "sample", "sample.csv", {}, db)
+    storage.export_run("sample", db, ship)
+    storage.purge_old_runs(db, now=datetime.now(timezone.utc) + timedelta(days=2))
+    assert list(storage.find_run("sample", db, ship)["id"]) == ["1"]  # reloaded from the shipped file, no AI cost
+
 # --- plain-English signposting (CR-16) ---------------------------------------------
 def test_headline_names_the_biggest_problem(labelled):
     text = aggregate.headline(aggregate.pain_points(labelled), len(labelled))

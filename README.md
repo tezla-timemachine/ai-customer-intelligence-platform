@@ -77,7 +77,7 @@ app/
     classify.py           steps 3–5 · batching, LLM call, schema check, retry (AI + code)
     llm.py                provider switch: anthropic | openai | mock
     aggregate.py          step 6 · counts, ranking, quotes, trends, baseline   (code)
-    storage.py            step 7 · SQLite: saved runs, no re-analysis on refresh
+    storage.py            step 7 · SQLite: saved runs (deleted after 24 h), no re-analysis on refresh
     opportunities.py      optional · AI opportunity suggestions, clearly labelled
 config/taxonomy.yaml      the 12 categories: edit here, not in code
 config/teams.yaml         suggested owner team per category (Action summary page only, not sent to the AI)

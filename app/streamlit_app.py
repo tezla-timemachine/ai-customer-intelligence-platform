@@ -9,7 +9,7 @@ import plotly.express as px
 import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.pipeline import aggregate, llm, opportunities  # noqa: E402
+from app.pipeline import aggregate, llm, opportunities, storage  # noqa: E402
 from app.pipeline.classify import PROMPT_VERSION, load_taxonomy  # noqa: E402
 from app.pipeline.run import analyse  # noqa: E402
 from app.pipeline.validate import ValidationError  # noqa: E402
@@ -27,10 +27,14 @@ if llm.provider() == "mock":
     st.warning("Running in **mock mode** — labels come from simple keyword rules, not AI. "
                "Set `LLM_PROVIDER` and an API key to use a real model.", icon="⚠️")
 
+storage.purge_old_runs()  # delete saved results older than 24 hours on every page load (CR-18)
+
 # --- 1. Upload -------------------------------------------------------------
 with st.sidebar:
     st.header("1 · Upload feedback")
     up = st.file_uploader("CSV with columns: feedback, date (+ optional id, rating, segment)", type=None)
+    st.caption("🔒 Emails, phone, card and account numbers are removed before reviews go to the AI. "
+               "Results are kept for 24 hours so a refresh doesn't re-run the analysis, then deleted.")
     # Untick sample data when a file is uploaded; tick it again when the file is removed (DEF-06).
     st.session_state.setdefault("use_sample", True)
     had_upload = st.session_state.get("_had_upload", False)

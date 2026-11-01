@@ -1,6 +1,6 @@
 # Business Requirements Document — AI Customer Intelligence Platform (MVP)
 
-> **Status:** Draft v0.4 · Covers challenge Parts 2 (MVP definition) and 3 (BRD).
+> **Status:** v0.5 · 1 Nov 2026 · Covers challenge Parts 2 (MVP definition) and 3 (BRD).
 > Builds on [Product / Business Brief](ai-customer-intelligence-platform-01-product-business-brief.md). Figures marked *(assumption)*
 > are placeholders to validate during build and evaluation.
 >
@@ -10,6 +10,9 @@
 > Jan–Sep 2025 (2,618 reviews) after finding August was unrepresentative.
 > **v0.4:** after labelling the evaluation set — reviews with several issues now get a main
 > category plus up to 3 secondary categories; Praise narrowed to non-specific praise.
+> **v0.5:** baselined. FR-04 updated to the outcome rule (CR-08), FR-17 Action summary added (CR-17), and
+> [Appendix A](#appendix-a--changes-since-baseline) records every change since baseline, what was outside the
+> original scope, and the one deviation found (privacy retention), now fixed by CR-18.
 
 ---
 
@@ -205,7 +208,7 @@ Upload CSV
 | **FR-01 Upload feedback** | The user shall be able to upload a CSV file containing customer feedback. | Must |
 | **FR-02 Validate file** | The system shall check required columns exist, reject files over 5,000 rows / 5 MB, and report how many rows were skipped (e.g. empty feedback) and why. | Must |
 | **FR-03 Redact personal data** | The system shall remove email addresses, phone numbers and card/account-number patterns from feedback text before it is sent to the LLM. | Must |
-| **FR-04 Classify feedback** | The system shall assign each feedback item one **main** category from the controlled taxonomy (§2.5) — the issue given most words or anger. | Must |
+| **FR-04 Classify feedback** | The system shall assign each feedback item one **main** category from the controlled taxonomy (§2.5), chosen by **outcome**: the task the customer was trying to do that went wrong. The cause goes in the secondary categories. *(Changed v0.5, CR-08; was "the issue given most words or anger".)* | Must |
 | **FR-04b Secondary issues** | Where a review raises other distinct issues, the system shall record up to 3 secondary categories from the same taxonomy. | Must |
 | **FR-05 Sentiment** | The system shall label each item positive, negative, neutral or mixed. | Must |
 | **FR-06 Theme extraction** | The system shall produce a short (≤ 8 word) theme describing the main point of each item. | Must |
@@ -219,6 +222,7 @@ Upload CSV
 | **FR-14 Export** | The user shall be able to download a CSV of every item with its category, sentiment, theme and problem. | Must |
 | **FR-15 Processing status** | The system shall show progress while analysis runs and a summary when it completes (items analysed, items failed). | Should |
 | **FR-16 Configurable taxonomy** | Categories and their definitions shall be loaded from a config file, so they can be changed without code changes. | Must |
+| **FR-17 Action summary** | The dashboard shall group the ranked pain points by suggested owner team (Engineering, Product, Operations, from a config file), with example themes, related issues, app versions, trend and a quote, downloadable as Markdown. *(Added v0.5, CR-17: outside the original scope.)* | Could |
 
 ---
 
@@ -246,7 +250,7 @@ Upload CSV
 |---|---|
 | **Performance** | Dashboard filters and charts respond in under 1 second once analysis is complete. |
 | **Security** | API keys stored as environment variables, never in code or the repo. App served over HTTPS. |
-| **Privacy** | Personal data redacted before LLM calls (FR-03). Uploaded files are not used to train models and are deleted after the session / 24 hours. Reviewer names are not present in the dataset and must not be added. |
+| **Privacy** | Personal data redacted before LLM calls (FR-03). Uploaded files are not used to train models and are deleted after the session / 24 hours. Reviewer names are not present in the dataset and must not be added. *(Met from v0.5: saved results are deleted after 24 hours, CR-18. See Appendix A.3.)* |
 | **Scalability** | Not a goal for the MVP. Batching design allows larger files later without redesign. |
 | **Reliability** | A failed LLM call affects only its batch, not the whole upload. Results are saved once analysed so a page refresh doesn't re-run (and re-pay for) the analysis. |
 | **Usability** | A first-time user can upload a file and reach the top pain points without instructions. |
@@ -287,6 +291,9 @@ Upload CSV
 - Fine-tuning or training a custom model
 - AI making prioritisation decisions — it informs, the PM decides
 
+Anything later added from this list, or beyond it, is recorded in
+[Appendix A](#appendix-a--changes-since-baseline) with its change record.
+
 ---
 
 ## 10. Open Questions
@@ -295,3 +302,62 @@ Upload CSV
 - What caused the July 2025 jump in volume and ratings? → check app version history / in-app rating prompts.
 - Does the 12-category taxonomy keep "Other" under ~10%? → check with the eval set.
 - ~~Should Praise be split to give positive insight too?~~ → **Resolved (v0.4):** specific praise is labelled by the aspect praised, so the dashboard can also show what customers like.
+
+---
+
+## Appendix A — Changes since baseline
+
+The requirements were baselined at **v0.4 (30 Oct 2026)**, when they were
+shared with the mentor for review (milestone M1, still in review). Every change since then has a change
+record in the [change control log](ai-customer-intelligence-platform-10-change-control-log.md).
+Changes made while drafting (v0.2 to v0.4) are listed too, so the whole
+history of scope is in one place.
+
+**Scope column:** *In scope* means the change refines or delivers something
+the BRD already asked for. *Added* means the BRD did not ask for it. *No BRD
+impact* means a delivery, repository or defect change with no effect on
+requirements.
+
+### A.1 Change register (BRD view)
+
+| CR | Date | Change | Scope | Effect on this BRD | BRD version |
+|---|---|---|---|---|---|
+| CR-01 | 30 Oct | Working dataset widened from Aug 2025 to Jan–Sep 2025 (2,618 reviews) | In scope (data) | §2.1 dataset, §2.2 baseline recomputed | v0.3 |
+| CR-02 | 30 Oct | Upload limit raised from 2,000 to 5,000 rows | In scope | FR-02, AI requirements (max file size) | v0.3 |
+| CR-03 | 30 Oct | Main category plus up to 3 secondary categories | **Added** | New FR-04b; FR-09 counts secondary issues; JSON schema gains `other_categories` | v0.4 |
+| CR-04 | 30 Oct | Taxonomy v2: Praise narrowed, crash and "old app better" rules | In scope | §2.5 taxonomy | v0.4 |
+| CR-05 | 31 Oct | Anthropic SDK 2.x fix | No BRD impact | None (defect) | — |
+| CR-06 | 31 Oct | "Temperature 0" replaced by repeatability measured in the eval | In scope | AI requirements (model behaviour) | v0.4 text updated |
+| CR-07 | 31 Oct | Commit author rewritten for privacy | No BRD impact | None (repository) | — |
+| CR-08 | 31 Oct | Main issue chosen by **outcome** (prompt and taxonomy v3) | In scope (changes a rule) | **FR-04 rule changed**; §2.5 taxonomy v3 | v0.5 |
+| CR-09 | 31 Oct | 6 evaluation labels changed to the outcome rule | In scope | None to requirements; affects how the quality bar is measured (bias risk R07) | — |
+| CR-12 | 31 Oct | Batches sent in parallel | In scope | Delivers the response-time target (8 min → 6.1 min achieved) | — |
+| CR-13 | 31 Oct | UAT dashboard fixes (filters drive the summary, readable charts) | In scope | Delivers FR-11, FR-12 and the transparency NFR | — |
+| CR-14 | 31 Oct | Sample results shipped with the code; versions pinned | **Added** (small) | Not in the BRD: a demo that loads instantly at no cost. Supports the reliability NFR | — |
+| CR-15 | 1 Nov | Deployed to Streamlit Community Cloud, two weeks early | No BRD impact (schedule) | Security NFR met (key in Streamlit Secrets, HTTPS) | — |
+| CR-16 | 1 Nov | Plain-English signposting: answer-first headline, definitions, tooltips | In scope | Delivers the usability and transparency NFRs | — |
+| CR-17 | 1 Nov | Action summary page for Engineering, Product and Operations | **Added** | **New FR-17** (Could). Stays inside §9: it downloads a summary but does not create tickets automatically | v0.5 |
+| CR-18 | 1 Nov | Saved results deleted after 24 hours | In scope (fixes a gap) | Delivers the privacy NFR, which was not met (A.3) | v0.5 |
+
+Proposed but not decided: CR-10 (taxonomy boundaries) and CR-11 (outcome rule
+and praise). Neither changes a requirement; both aim to raise accuracy.
+
+### A.2 Summary: what was added beyond the original scope
+
+| Added | Why it was worth it | Cost or risk |
+|---|---|---|
+| Secondary categories (CR-03) | 20 of 50 labelled reviews raised several issues; one label per review hid real complaints from the ranking | More complex schema and eval; extra accuracy measures |
+| Shipped sample results (CR-14) | Live demo loads in about 1 second at no AI cost, even after a cloud restart | One results file to regenerate whenever the prompt or model changes |
+| Action summary page (CR-17) | Turns the ranking into a hand-off for Engineering, Product and Operations | Owner mapping is a judgement, kept in config; trends need care because review volume jumped in July 2025 |
+
+### A.3 Deviations from this BRD
+
+| Requirement | What the BRD says | What the app does | Action |
+|---|---|---|---|
+| Privacy NFR | Uploaded files are deleted after the session / 24 hours | Analysed results, including the original review text, are saved in SQLite (decision D14) and nothing deleted them. On the cloud they lasted until the app restarted; locally until the file was deleted | **Fixed by CR-18 (1 Nov):** saved results older than 24 hours are deleted whenever the page loads or an analysis starts, and the deleted text is overwritten on disk. The shipped sample reloads from `data/precomputed/` at no cost. The sidebar tells users this. **No open deviations remain.** |
+
+### A.4 Planned scope not yet approved
+
+The programme's Week 2 asks for **saved past analyses** and **user login**.
+Both are listed as out of scope in §9 today. Each needs a change record before
+work starts. Saved past analyses would also need the 24-hour rule (CR-18) revisited, and login would help with controlling API cost.
