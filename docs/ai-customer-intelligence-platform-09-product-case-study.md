@@ -1,8 +1,8 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.5 · 31 Oct 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix; v0.5 the dashboard fixes.
+> **Status:** Draft v0.6 · 1 Nov 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix; v0.5 the dashboard fixes; v0.6 the live deployment.
 > Author: Terence Field (Tez), AI Product Manager.
-> Live demo: *to come at launch* · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
+> Live demo: [ai-customer-intelligence-version1.streamlit.app](https://ai-customer-intelligence-version1.streamlit.app) · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
 **In one line:** a web app that turns a CSV of customer reviews into ranked,
 evidenced pain points for a Product Manager. AI does the reading, ordinary
@@ -298,7 +298,7 @@ the real model on 31 Oct 2026. Full results:
 | Next step | Why |
 |---|---|
 | Run the first-time-user test (UAT-14), then sign off UAT | The last open UAT case (Part 10, milestone M5) |
-| Deploy to Streamlit Community Cloud | A live link someone else can use (milestone M6) |
+| ✅ Done 1 Nov: deployed to Streamlit Community Cloud | Live link someone else can use (milestone M6). Next: share it with 2–3 testers |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |
 | Sharpen the Stability / Performance / Design boundaries (CR-10) | Two remaining misses |
 | Self-agreement check and mentor labelling of 10 rows | One labeller is a bias risk (R07) |

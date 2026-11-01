@@ -8,7 +8,7 @@ Built on **2,618 real Google Play reviews of the Santander UK banking app
 unclassified**. This platform labels every review and links every insight
 back to real customer quotes.
 
-> **Live demo:** *link added at launch* · **Case study:** [read it](docs/ai-customer-intelligence-platform-09-product-case-study.md)
+> **Live demo:** [ai-customer-intelligence-version1.streamlit.app](https://ai-customer-intelligence-version1.streamlit.app) · **Case study:** [read it](docs/ai-customer-intelligence-platform-09-product-case-study.md)
 
 ![Top pain points from 2,618 Santander reviews](docs/screenshots/dashboard-01-top-pain-points.jpg)
 
@@ -58,6 +58,8 @@ ANTHROPIC_API_KEY = "..."
 The sample analysis ships with the code in `data/precomputed/`, so the demo
 loads instantly and costs nothing. New uploads call the AI and are billed to
 the key in Secrets, so set a monthly spend limit in the Anthropic Console.
+
+Live since 1 Nov 2026 at https://ai-customer-intelligence-version1.streamlit.app (milestone M6, CR-15).
 
 ## Repository
 

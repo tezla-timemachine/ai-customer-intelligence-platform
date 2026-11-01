@@ -25,8 +25,7 @@ and evaluation result.
 - **Dashboard fixes (CR-13):** summary numbers follow the filters and say "showing X of Y"; rating and problem share have separate charts; app versions are sorted by number and plotted as labels; "version unknown" replaces "vNone"; a hint explains the date range; "Use sample data" re-ticks when an upload is removed; the AI-unavailable error is in plain English, with technical details in an expander. 3 new tests (25 in total). UAT-09 and UAT-12 re-tested and pass: **UAT 25 pass, 0 fail, 1 not run.**
 - New screenshot: rating and problem share by month.
 - **Deployment readiness (CR-14):** the finished sample analysis ships in `data/precomputed/` and loads in about 1 second with no AI cost when there's no saved run, as on a fresh cloud deployment. `requirements.txt` is pinned to the tested versions. README has a deploy section. 1 new test (26 in total).
-### Planned
-- Deployment to Streamlit Community Cloud (milestone M6)
+- **Live on Streamlit Community Cloud (CR-15, milestone M6):** https://ai-customer-intelligence-version1.streamlit.app. The API key is held in the app's Secrets, not the repo. Checked from a browser not signed in to Streamlit: the sample loads all 2,618 reviews from the shipped results in seconds, with the same numbers as the case study and no AI cost.
 
 ## [0.4.1] — 2026-10-31 — First real evaluation run
 ### Fixed

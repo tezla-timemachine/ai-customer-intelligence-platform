@@ -95,8 +95,8 @@ Red outline = critical path · ◆ = milestone · green = done · grey = not sta
 
 | ID | Task | Start | End | Days | Depends on | Milestone | Status | Critical |
 |---|---|---|---|---|---|---|---|---|
-| T21 | Deploy MVP (Streamlit Cloud) | Mon 16 Nov | Mon 16 Nov | 1 | M5 |  | Not started | ● |
-| M6 | **MVP live** | Mon 16 Nov | Mon 16 Nov | — | T21 | ◆ | Not started | ● |
+| T21 | Deploy MVP (Streamlit Cloud) | Mon 16 Nov | Mon 16 Nov | 1 | M5 |  | Done 1 Nov (early, before M5; CR-15) | ● |
+| M6 | **MVP live** | Mon 16 Nov | Mon 16 Nov | — | T21 | ◆ | Done 1 Nov | ● |
 | T22 | User testing (2–3 people) | Tue 17 Nov | Tue 17 Nov | 1 | M6 |  | Not started |  |
 | T23 | Collect feedback + define next iteration | Wed 18 Nov | Wed 18 Nov | 1 | T22 |  | Not started |  |
 | M7 | **Portfolio package complete** | Wed 18 Nov | Wed 18 Nov | — | T23 | ◆ | Not started |  |
