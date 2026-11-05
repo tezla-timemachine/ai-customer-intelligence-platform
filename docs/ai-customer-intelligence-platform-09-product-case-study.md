@@ -1,6 +1,6 @@
 # Case Study — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.6 · 1 Nov 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix; v0.5 the dashboard fixes; v0.6 the live deployment.
+> **Status:** Draft v0.6 · 1 Nov 2026 · Covers challenge Part 11. v0.2 added the full-data run and screenshots; v0.3 UAT results; v0.4 the speed fix; v0.5 the dashboard fixes; v0.6 the live deployment; v0.7 (5 Nov, after mentor review) business results, the client's roles, and business UAT.
 > Author: Terence Field (Tez), AI Product Manager.
 > Live demo: [ai-customer-intelligence-version1.streamlit.app](https://ai-customer-intelligence-version1.streamlit.app) · Repo: [tezla-timemachine/ai-customer-intelligence-platform](https://github.com/tezla-timemachine/ai-customer-intelligence-platform)
 
@@ -35,6 +35,13 @@ whether AI is the right answer at all, and section 3 answers that.
 
 Head of Product, Product Ops and Customer Success can use the same
 dashboard, but nothing in the MVP is built specifically for them.
+
+**The client's side:** a Project Sponsor (budget, timeline, go-live), a
+Product Owner (requirements, categories, UAT sign-off), pilot PMs as business
+users, Information Security (customer data and the AI provider) and the
+Engineering and Customer Operations leads who receive the hand-off. They are
+role titles in this project; who decides what is set out in the
+[Brief, §8](ai-customer-intelligence-platform-01-product-business-brief.md#8-stakeholders-and-decision-rights).
 
 ## 3. AI opportunity
 
@@ -183,12 +190,38 @@ low-star reviews on their own.
     changes made the AI's score *worse*;
   - recorded every change in the labelling log and the change control log;
   - measured the relabelling effect separately (section 10).
+- **Client focus (mentor review, 5 Nov).** My mentor said the documents
+  were strong technically but read as the builder's view: few client
+  activities, approvals or business results. I added the client's roles and
+  decision rights, rewrote the BRD in business terms, put client milestones
+  into the plan, added business risks with client owners, and split system
+  testing from business UAT. The biggest lesson: once the build was done, every
+  remaining step on the critical path needed someone from the client (CR-19).
 - **Change control.** Every change to scope, categories, prompt, model,
   labels, data or schedule now gets a change record with its reason, impact
   and approval. See the
   [change control log](ai-customer-intelligence-platform-10-change-control-log.md).
 
 ## 10. Results
+
+### Business results
+
+What the client will judge the MVP on ([BRD §11](ai-customer-intelligence-platform-02-business-requirements-document.md#11-expected-business-outcomes)).
+Only some can be measured before pilot PMs use it, so each row says how
+strong the evidence is.
+
+| Outcome | Target | Evidence so far | Status |
+|---|---|---|---|
+| Less time spent on analysis | ~12 hours → under 2 hours per PM per month | Analysis of all 2,618 reviews takes 6.1 minutes. A PM's own time hasn't been measured yet, and the ~12-hour baseline is still an estimate (Brief A1) | **Not yet measured** (business UAT BUAT-06) |
+| Less manual tagging | From hand-tagging a sample to none | All 2,618 reviews labelled with no hand-tagging. 10.4% are flagged as low-confidence for an optional check, so at most about 1 review in 10 might need a person to look at it | **Measured** (full-data run) |
+| Every review analysed | From a sample to 100% | 2,618 of 2,618 analysed, none left unclassified. The old topic model left 47% of problem reviews "Undefined" | **Measured** |
+| Problems seen sooner | Same day as upload | A ranked view 6.1 minutes after upload, or about 1 second for the shipped sample | **Measured** (time from export to upload not measured) |
+| Cost | Under £1 per 1,000 reviews | $0.26 for the whole dataset, about $0.10 per 1,000 | **Measured** |
+| Helps decisions | Used in the next 2 prioritisation cycles by pilot PMs | Not yet used by a real PM | **Not yet measured** (BUAT-02, user testing T22) |
+| User feedback | Pilot PMs find and trust the top problems | First-time-user test (BUAT-01) run by the mentor, result awaited. Earlier first-look feedback led to clearer signposting (CR-16) | **In progress** |
+
+**What it would be worth if the estimate holds:** 10 hours saved per PM per
+month. That is an *estimate*, not a result, until BUAT-06 is run.
 
 | Measure | Prompt v2, original labels | Prompt v2, corrected labels | **Prompt v3, corrected labels** | Target |
 |---|---|---|---|---|
@@ -262,17 +295,24 @@ reviews and on sentiment for 98.8%, with the same top 5 pain points. The
 model can no longer be set to answer identically every time, so a small
 amount of run-to-run variation is expected. The ranking a PM sees is stable.
 
-### User acceptance testing (UAT)
+### Testing: system tests and business UAT
 
-26 test cases (14 functional, 12 AI-specific), run in the dashboard against
-the real model on 31 Oct 2026. Full results:
-[UAT workbook](ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx).
+Testing has two parts ([workbook](ai-customer-intelligence-platform-08-user-acceptance-testing.xlsx)):
+
+- **System & AI tests** (25 cases, run by me against the real model on 31 Oct)
+  check the software and the AI do what the BRD says.
+- **Business UAT** (7 cases, run by pilot PMs and the Engineering and
+  Customer Operations leads) checks whether the product solves the business
+  problem: can a PM prepare for a prioritisation meeting with it, trust the
+  labels, see whether a release made things worse, hand off to the right team,
+  and save time?
 
 | | Pass | Fail | Not run |
 |---|---|---|---|
-| Functional | 13 | 0 | 1 |
-| AI-specific | **12** | 0 | 0 |
-| **Total** | **25** | **0** | **1** |
+| System: functional | 13 | 0 | 0 |
+| System: AI-specific | **12** | 0 | 0 |
+| **System total** | **25** | **0** | **0** |
+| **Business UAT** | 0 | 0 | 7 (first case run by the mentor, result awaited) |
 
 - **Every AI case passed:** mixed sentiment, sarcasm, multiple issues, very
   short reviews, duplicates, off-topic complaints and specific praise. So did
@@ -287,17 +327,18 @@ the real model on 31 Oct 2026. Full results:
   (CR-13). The summary numbers now follow the filters ("showing 10 of
   2,618"), and rating and problem share have their own charts. All six
   defects in the workbook's Defects sheet are fixed.
-- **Not run:** the first-time-user test needs someone who has never seen the
-  app.
-- **Before sign-off (milestone M5):** every case I can run passes. Only
-  UAT-14 is left: a first-time user has to find the biggest problem without
-  help.
+- **The first-time-user test (formerly UAT-14) moved to business UAT** as
+  BUAT-01, because it tests a business user, not the system.
+- **Before sign-off (milestone M5):** every system test passes. Sign-off now
+  waits for business UAT, which is what the Product Owner signs on.
 
 ## 11. Next iteration
 
 | Next step | Why |
 |---|---|
-| Run the first-time-user test (UAT-14), then sign off UAT | The last open UAT case (Part 10, milestone M5) |
+| Client approvals: requirements (M1), prototype review (C2), security review (C4) | Every remaining critical-path step needs the client |
+| Run business UAT with pilot PMs, then UAT sign-off by the Product Owner (M5) | Proves the product solves the business problem, not just that it works |
+| Measure a manual-review baseline, then time with the tool (BUAT-06) | Turns the time-saving estimate into a result |
 | ✅ Done 1 Nov: deployed to Streamlit Community Cloud | Live link someone else can use (milestone M6). Next: share it with 2–3 testers |
 | Fix the outcome rule's side effect on positive reviews (CR-11) | Two new misses |
 | Sharpen the Stability / Performance / Design boundaries (CR-10) | Two remaining misses |
@@ -307,6 +348,9 @@ the real model on 31 Oct 2026. Full results:
 
 ## What I'd tell another PM
 
+- **Plan the client's side, not just the build.** I finished the build two
+  weeks early, and then every remaining step depended on someone else's
+  approval. Put approvals, demos, business UAT and handover in the plan from day one.
 - **Write the evaluation before you trust the AI, and expect it to test you
   too.** My biggest accuracy problem was my own inconsistent labels, not
   the model.

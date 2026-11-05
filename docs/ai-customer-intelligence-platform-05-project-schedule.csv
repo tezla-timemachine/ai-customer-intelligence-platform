@@ -1,31 +1,38 @@
-id,phase,task,start,end,depends_on,milestone,status,critical,duration_days
-T1,1 Discovery & Requirements,Business problem & product brief,2026-10-29,2026-10-29,,,Done,Y,1
-T2,1 Discovery & Requirements,Dataset selection & profiling,2026-10-30,2026-10-30,T1,,Done,Y,1
-T3,1 Discovery & Requirements,MVP scope & BRD,2026-10-30,2026-10-30,T2,,Done,Y,1
-M1,1 Discovery & Requirements,Requirements reviewed by mentor,2026-10-30,2026-10-30,T3,Y,In review,Y,0
-T4,2 Technical Design,Architecture & decision log,2026-10-30,2026-10-30,T3,,Done,Y,1
-T5,2 Technical Design,Model selection (test 2 models on 20 reviews),2026-11-02,2026-11-02,T4,,Not started,N,1
-T6,2 Technical Design,Data structure + output schema + taxonomy.yaml,2026-11-02,2026-11-02,T4,,Not started,Y,1
-T7,2 Technical Design,Prompt v1,2026-11-03,2026-11-03,T6,,Not started,Y,1
-T8,2 Technical Design,UI wireframe,2026-11-03,2026-11-03,T3,,Not started,N,1
-M2,2 Technical Design,Design complete,2026-11-03,2026-11-03,T5;T7;T8,Y,Not started,Y,0
-T9,3 Development,CSV upload & validation,2026-11-04,2026-11-04,M2,,Not started,N,1
-T10,3 Development,Redaction & batching,2026-11-04,2026-11-04,M2,,Not started,Y,1
-T11,3 Development,AI integration (LLM calls + schema check + retry),2026-11-05,2026-11-05,T7;T10,,Not started,Y,1
-T12,3 Development,Analysis engine (counts + ranking + quotes + baseline),2026-11-06,2026-11-06,T11,,Not started,Y,1
-T13,3 Development,Dashboard + evidence display + export,2026-11-09,2026-11-10,T12;T8,,Not started,Y,2
-M3,3 Development,MVP feature-complete,2026-11-10,2026-11-10,T9;T13,Y,Not started,Y,0
-T14,4 AI Evaluation,Build evaluation set (hand-label 50 reviews),2026-11-03,2026-11-04,T6,,Not started,N,2
-T15,4 AI Evaluation,Test classification & sentiment,2026-11-11,2026-11-11,M3;T14,,Not started,Y,1
-T17,4 AI Evaluation,Measure latency & cost,2026-11-11,2026-11-11,M3,,Not started,N,1
-T16,4 AI Evaluation,Failure analysis + prompt v2 + re-test,2026-11-12,2026-11-12,T15,,Not started,Y,1
-M4,4 AI Evaluation,Quality gate (≥85% accuracy),2026-11-12,2026-11-12,T16;T17,Y,Not started,Y,0
-T18,5 QA & UAT,Functional testing,2026-11-11,2026-11-11,M3,,Not started,N,1
-T19,5 QA & UAT,UAT (cases + run),2026-11-13,2026-11-13,M4;T18,,Not started,Y,1
-T20,5 QA & UAT,Bug fixing,2026-11-16,2026-11-16,T19,,Not started,Y,1
-M5,5 QA & UAT,UAT sign-off,2026-11-16,2026-11-16,T20,Y,Not started,Y,0
-T21,6 Deployment,Deploy MVP (Streamlit Cloud),2026-11-16,2026-11-16,M5,,Not started,Y,1
-M6,6 Deployment,MVP live,2026-11-16,2026-11-16,T21,Y,Not started,Y,0
-T22,6 Deployment,User testing (2–3 people),2026-11-17,2026-11-17,M6,,Not started,N,1
-T23,6 Deployment,Collect feedback + define next iteration,2026-11-18,2026-11-18,T22,,Not started,N,1
-M7,6 Deployment,Portfolio package complete,2026-11-18,2026-11-18,T23,Y,Not started,N,0
+id,phase,task,owner,start,end,depends_on,milestone,status,critical,duration_days,note
+T1,1 Discovery & Requirements,Business problem & product brief,Delivery Lead,2026-10-29,2026-10-29,,,Done,Y,1,
+T2,1 Discovery & Requirements,Dataset selection & profiling,Delivery Lead,2026-10-30,2026-10-30,T1,,Done,Y,1,
+T3,1 Discovery & Requirements,MVP scope & BRD,Delivery Lead,2026-10-30,2026-10-30,T2,,Done,Y,1,BRD v0.6 (client-focused) 5 Nov
+C1,1 Discovery & Requirements,Client requirements review,Product Owner; Project Sponsor,2026-11-05,2026-11-09,T3,,In review,Y,3,Mentor reviewing; BRD v0.6 re-shared 5 Nov
+M1,1 Discovery & Requirements,Requirements approved,Product Owner; Project Sponsor,2026-11-09,2026-11-09,C1,Y,In review,Y,0,Planned 30 Oct as a mentor review
+T4,2 Technical Design,Architecture & decision log,Delivery Lead,2026-10-30,2026-10-30,T3,,Done,Y,1,
+T5,2 Technical Design,Model selection,Delivery Lead,2026-10-31,2026-10-31,T4,,Done,N,1,"One model tested; it passed the quality gate, so no second was needed. Planned 2 Nov"
+T6,2 Technical Design,Data structure + output schema + taxonomy,Delivery Lead,2026-10-30,2026-10-30,T4,,Done,Y,1,Planned 2 Nov
+T7,2 Technical Design,Prompt v1,Delivery Lead,2026-10-30,2026-10-30,T6,,Done,Y,1,Planned 3 Nov
+T8,2 Technical Design,UI wireframe,Delivery Lead,2026-10-30,2026-10-30,T3,,Skipped,N,1,Dashboard built directly; the client sees it at the prototype review (C2)
+M2,2 Technical Design,Design complete,Delivery Lead,2026-10-30,2026-10-30,T5;T7,Y,Done,Y,0,Planned 3 Nov
+T9,3 Development,CSV upload & validation,Delivery Lead,2026-10-30,2026-10-30,M2,,Done,N,1,Planned 4 Nov
+T10,3 Development,Redaction & batching,Delivery Lead,2026-10-30,2026-10-30,M2,,Done,Y,1,Planned 4 Nov
+T11,3 Development,AI integration (LLM calls + schema check + retry),Delivery Lead,2026-10-30,2026-10-31,T7;T10,,Done,Y,1,Planned 5 Nov; SDK fix 31 Oct (CR-05)
+T12,3 Development,Analysis engine (counts + ranking + quotes + baseline),Delivery Lead,2026-10-30,2026-10-30,T11,,Done,Y,1,Planned 6 Nov
+T13,3 Development,Dashboard + evidence display + export,Delivery Lead,2026-10-30,2026-11-01,T12,,Done,Y,1,"Planned 9–10 Nov; signposting and Action summary 1 Nov (CR-16, CR-17)"
+M3,3 Development,MVP feature-complete,Delivery Lead,2026-10-30,2026-10-30,T9;T13,Y,Done,Y,0,Planned 10 Nov
+C2,3 Development,Prototype review and demo,Product Owner; Business Users,2026-11-10,2026-11-10,M3;M1,,Not started,Y,1,Client sees the live app and agrees the business UAT
+T14,4 AI Evaluation,Build evaluation set (hand-label 50 reviews),Delivery Lead,2026-10-30,2026-10-30,T6,,Done,N,1,Planned 3–4 Nov
+T15,4 AI Evaluation,Test classification & sentiment,Delivery Lead,2026-10-31,2026-10-31,M3;T14,,Done,Y,1,Planned 11 Nov
+T17,4 AI Evaluation,Measure speed & cost,Delivery Lead,2026-10-31,2026-10-31,M3,,Done,N,1,$0.26 per full run; 6.1 min. Planned 11 Nov
+T16,4 AI Evaluation,Failure analysis + prompt v3 + re-test,Delivery Lead,2026-10-31,2026-10-31,T15,,Done,Y,1,Planned 12 Nov
+M4,4 AI Evaluation,Quality gate (≥85% accuracy),Delivery Lead,2026-10-31,2026-10-31,T16;T17,Y,Done,Y,0,"Category 92%, sentiment 94%. Planned 12 Nov"
+T18,5 Testing & UAT,System & AI testing (25 cases),Delivery Lead,2026-10-30,2026-10-31,M3,,Done,N,1,Planned 11–13 Nov
+T20,5 Testing & UAT,Fix system-test defects,Delivery Lead,2026-10-31,2026-11-01,T18,,Done,N,1,DEF-01 to DEF-10 fixed
+C3,5 Testing & UAT,Business UAT with pilot PMs,Business Users; Product Owner,2026-11-11,2026-11-12,C2;M4,,In progress,Y,2,"First case (BUAT-01, formerly UAT-14) run by the mentor; result awaited"
+C4,5 Testing & UAT,Security review: privacy and AI provider,Information Security,2026-11-09,2026-11-11,T3,,Not started,N,3,"Redaction, provider terms, 24-hour deletion (Brief A5)"
+T24,5 Testing & UAT,Fix business UAT findings,Delivery Lead,2026-11-13,2026-11-13,C3,,Not started,Y,1,
+M5,5 Testing & UAT,UAT sign-off,Product Owner,2026-11-16,2026-11-16,T24,Y,Not started,Y,0,
+T21,6 Go-live & Handover,Deploy to Streamlit Cloud (demo link),Delivery Lead,2026-11-01,2026-11-01,M4,,Done,N,1,"Early, before approval (CR-15): demo with public data only. Planned 16 Nov"
+M6,6 Go-live & Handover,Demo link live,Delivery Lead,2026-11-01,2026-11-01,T21,Y,Done,N,0,Planned 16 Nov
+M8,6 Go-live & Handover,Go-live approved for business use,Project Sponsor,2026-11-16,2026-11-16,M5;C4,Y,Not started,Y,0,On the Product Owner's and Information Security's recommendation
+T22,6 Go-live & Handover,User testing with pilot PMs,Business Users; Delivery Lead,2026-11-17,2026-11-17,M8,,Not started,N,1,
+T23,6 Go-live & Handover,Collect feedback + define next iteration,Delivery Lead; Product Owner,2026-11-18,2026-11-18,T22,,Not started,N,1,
+C5,6 Go-live & Handover,Handover to client,Delivery Lead; Product Owner; Customer Operations Lead,2026-11-17,2026-11-18,M8,,Not started,Y,2,"Run guide, handover session, ownership of categories and team owners"
+M9,6 Go-live & Handover,Handover accepted,Product Owner,2026-11-18,2026-11-18,C5,Y,Not started,Y,0,
+M7,6 Go-live & Handover,Portfolio package complete,Delivery Lead,2026-11-18,2026-11-18,T23;M9,Y,Not started,N,0,

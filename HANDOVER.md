@@ -1,6 +1,6 @@
 # Project Handover — AI Customer Intelligence Platform
 
-> **Last updated:** 31 Oct 2026 · **Version:** v0.4.1 · **Repo:** https://github.com/tezla-timemachine/ai-customer-intelligence-platform
+> **Last updated:** 5 Nov 2026 · **Version:** v0.4.1 · **Repo:** https://github.com/tezla-timemachine/ai-customer-intelligence-platform
 >
 > Read this first if you're picking the project up in a new session, whether
 > you're a person, Claude or Claude Code. It explains what the project is,
@@ -61,16 +61,16 @@ README (`tezla-timemachine/tezla-timemachine`) as the portfolio front page.
 
 | Part | Deliverable | Status | Where |
 |---|---|---|---|
-| 1 | Product / Business Brief | ✅ Done | `docs/…-01-product-business-brief.md` |
-| 2–3 | MVP scope + BRD (v0.4) | ✅ Done | `docs/…-02-business-requirements-document.md` |
-| 4 | AI architecture + decision log (16 decisions) | ✅ Done (D9 updated 31 Oct) | `docs/…-03-…`, diagram `.png` / `.mmd` |
-| 5–6 | Project plan + Gantt | ✅ Done (dates need refreshing) | `docs/…-04-project-plan.md`, `…-05-gantt-chart.png`, schedule CSV + script |
-| 7 | Risk register (12 risks) | ✅ Done | `docs/…-06-risk-register.md` |
+| 1 | Product / Business Brief (v0.2: client roles, decision rights, assumption owners) | ✅ Done | `docs/…-01-product-business-brief.md` |
+| 2–3 | MVP scope + BRD (v0.6: business terms, outcomes, approvals; Appendix A) | ✅ Done · ⏳ client approval (M1) | `docs/…-02-business-requirements-document.md` |
+| 4 | AI architecture + decision log (17 decisions, each with business impact) | ✅ Done (v0.2, 5 Nov) | `docs/…-03-…`, diagram `.png` / `.mmd` |
+| 5–6 | Project plan + Gantt | ✅ v0.2: real dates and client activities; Gantt redrawn 5 Nov (client activities hatched) | `docs/…-04-project-plan.md`, `…-05-gantt-chart.png`, schedule CSV + script |
+| 7 | Risk register (19 risks, owners across client roles) | ✅ Done (v0.2) | `docs/…-06-risk-register.md` |
 | 8 | Build the MVP | ✅ Built, runs with a real LLM | `app/` |
 | 9 | Evaluation set + eval script | ✅ Labelled, **first real run done** | `evals/` |
 | 9 | Evaluation results write-up | ✅ Prompt v3 passes the gate (92% / 94%). ⏳ **Next:** write doc 07 | `docs/…-07-ai-evaluation-results.md` (to create) |
-| 10 | UAT (26 cases + test files) | ✅ 25 pass / 0 fail / 1 not run (UAT-14) · ⏳ sign-off | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
-| 11 | Deploy + portfolio + case study | ✅ **Live 1 Nov:** https://ai-customer-intelligence-version1.streamlit.app · case study v0.6 · screenshots · full-data results | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
+| 10 | Testing: 25 system & AI tests + 7 business UAT cases | ✅ System 25/25 pass · ⏳ business UAT (BUAT-01 run by the mentor, result awaited), then Product Owner sign-off (M5) | `docs/…-08-user-acceptance-testing.xlsx`, `tests/uat_data/` |
+| 11 | Deploy + portfolio + case study | ✅ **Live 1 Nov:** https://ai-customer-intelligence-version1.streamlit.app · case study v0.7 (business results) · screenshots · full-data results | Streamlit Community Cloud; `docs/…-09-product-case-study.md` |
 
 ---
 
@@ -217,12 +217,13 @@ eval's duplicate-consistency measure rather than enforced by temperature.
 | 1 | ✅ **Done 31 Oct: commit author fixed.** Both of Tez's commits and the v0.4.0 tag were rewritten to `Terence Field <129769377+tezla-timemachine@users.noreply.github.com>`, keeping the original dates, and force-pushed. The repo's git config now uses that identity. **Still to do (Tez, on github.com):** Settings → Emails → tick "Keep my email addresses private" and "Block command line pushes that expose my email". | Tez |
 | 2 | ✅ Outcome rule (D17), prompt v3, re-run done: gate passed. ⏳ Write `…-07-ai-evaluation-results.md` | Together |
 | 3 | ✅ Done 31 Oct: full run on 2,618 reviews, 0 unclassified, $0.26. Now 6.1 min after CR-12 (was ~30). Top pain point: App Updates & Stability. Screenshots in `docs/screenshots/` | Tez |
-| 4 | ✅ UAT 31 Oct: 25 pass, 0 fail, 1 not run. UAT-06 fixed by CR-12, UAT-09 and UAT-12 by CR-13. ⏳ Run UAT-14 with a first-time user (colleague or mentor), then fill in the sign-off on the Overview sheet (M5) | Tez |
+| 4 | ✅ System & AI tests 31 Oct: 25 of 25 pass. UAT-06 fixed by CR-12, UAT-09 and UAT-12 by CR-13. UAT-14 moved to business UAT as BUAT-01 (5 Nov). ⏳ Record the mentor's BUAT-01 result, run the other business UAT cases, then fill in the sign-off on the Overview sheet (M5) | Tez |
 | 4b | ✅ Done 1 Nov: first-look feedback on the live app (hard-to-read hover box, unexplained low-confidence number, no category or sentiment definitions, weak signposting) fixed as DEF-07 to DEF-10 (CR-16). Action summary page for Engineering / Product / Operations added (CR-17). ⏳ Push, so the live app picks them up; then run UAT-14 on the new version | Tez |
 | 4c | ✅ Done 1 Nov: **privacy gap fixed (CR-18).** Saved results, which hold the original review text, are now deleted after 24 hours (`storage.purge_old_runs`), as the BRD privacy requirement says. The shipped sample is unaffected. ⏳ Push, so the live app picks it up | Tez |
 | 5 | ✅ Done 1 Nov: deployed to Streamlit Community Cloud (https://ai-customer-intelligence-version1.streamlit.app), API key in app Secrets, live link in README and case study (CR-15). ⏳ Set a monthly spend limit in the Anthropic Console; share the link with 2–3 testers (T22) | Tez |
 | 6 | Case study (`…-09-product-case-study.md`), screenshots, README polish | Together |
-| 7 | Refresh the Gantt dates to the real progress | Together |
+| 7 | ✅ Done 5 Nov: schedule has real dates and client activities, and the Gantt is redrawn. To redraw again: `cd docs && ../.venv/bin/python …-05-make-gantt-chart.py` (matplotlib is in `.venv` but not in `requirements.txt`, so the live app doesn't install it) | Together |
+| 7b | ✅ Done 5 Nov: mentor feedback on client focus applied to all documents (CR-19). Client roles are titles only (Brief §8) | Tez |
 | 8 | Add a LICENSE (all rights reserved or MIT: Tez to decide) | Tez |
 | 9 | Week 2 items not yet built: a list of stored projects (past analyses), and authentication | Later (v0.5) |
 | 10 | Open question: what caused the July 2025 volume and rating jump? | Case study |

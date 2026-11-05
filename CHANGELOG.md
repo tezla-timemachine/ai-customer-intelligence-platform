@@ -10,6 +10,7 @@ and evaluation result.
 
 ## [Unreleased]
 ### Changed
+- **Client-focused documents (CR-19, after mentor review, 5 Nov):** the client's roles (titles only) and who decides what are now in the Brief (v0.2), and every assumption names who confirms it. BRD v0.6 is in business terms: technical detail moved to the architecture document, which now states each decision's business impact. The plan and Gantt data add client activities (requirements approval, prototype review, business UAT, security review, go-live approval, handover) and real dates. The risk register adds 7 business and client risks and spreads ownership across client roles. The UAT workbook separates 25 system & AI tests from 7 business UAT cases. The change control log says who approves each type of change. The case study gains a business results section that separates measured results from estimates.
 - **Prompt v3 and taxonomy v3:** the main issue is now chosen by *outcome*, the task the customer was trying to do that went wrong. The cause becomes a secondary issue (decision D17). Prompt v2 is kept for comparison.
 - **Evaluation set:** 6 main-category labels changed to follow the outcome rule (E13, E14, E24, E41, E44, E47). They are recorded as post-eval changes in `evals/labelling-log.md` and in each row's label notes.
 - Labelling guide updated to the outcome rule.

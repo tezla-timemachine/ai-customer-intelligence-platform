@@ -47,7 +47,7 @@ whole flow can be tried, and the screen clearly says it isn't AI output.
 |---|---|
 | `pytest` | Unit tests for validation, redaction, output checking and aggregation |
 | `python evals/run_eval.py` | Accuracy against the human-labelled evaluation set |
-| `python docs/ai-customer-intelligence-platform-05-make-gantt-chart.py` | Redraws the Gantt chart from the schedule CSV |
+| `cd docs && python ai-customer-intelligence-platform-05-make-gantt-chart.py` | Redraws the Gantt chart from the schedule CSV (needs `matplotlib`, which isn't in `requirements.txt`) |
 
 ### Deploy (Streamlit Community Cloud)
 
@@ -85,7 +85,7 @@ prompts/classify_v1.txt   versioned prompt
 evals/                    evaluation set, labelling guide, eval script, results
 data/                     working dataset (Santander Jan–Sep 2025) + old-model labels
 tests/                    pytest
-docs/                     brief, BRD, architecture, plan, Gantt, risks, UAT
+docs/                     brief, BRD, architecture, plan, Gantt, risks, testing & UAT
 ```
 
 ## Documentation

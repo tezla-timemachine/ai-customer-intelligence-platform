@@ -1,7 +1,9 @@
 # Product / Business Brief — AI Customer Intelligence Platform
 
-> **Status:** Draft v0.1 — figures marked *(assumption)* are placeholders to
+> **Status:** Draft v0.2 · 5 Nov 2026 — figures marked *(assumption)* are placeholders to
 > validate or replace with real data before sign-off.
+> **v0.2:** after mentor review — added the client's stakeholders and who decides what (§8), and
+> each assumption now says who confirms it, how, and its status (§7).
 
 ---
 
@@ -117,10 +119,48 @@ for the PM to evaluate.
 
 ## 7. Key Assumptions to Validate
 
-- Feedback can be exported to CSV with at least text, date, rating and
-  customer type.
-- A fixed taxonomy of roughly 8–12 categories covers most feedback.
-- PMs will trust AI-generated categories if every theme shows its
-  supporting evidence.
-- Sending feedback text to an external LLM is acceptable once personal
-  data is removed.
+Each assumption has a client owner who confirms it. Roles are defined in §8.
+Status as of 5 Nov 2026.
+
+| # | Assumption | How it will be confirmed | Confirmed by | Status |
+|---|---|---|---|---|
+| A1 | PMs spend about 1–2 days (~12 hours) a month on manual feedback review | Ask 3–5 PMs to log time for one monthly review | Product Owner, with the pilot PMs | **Open.** The ~12 hours in §6 is still an estimate |
+| A2 | Feedback can be exported to CSV with at least text, date, rating and customer type | Export one month from each of the four channels | Customer Operations Lead (support tickets); Product Owner (reviews, surveys) | **Partly confirmed:** app-store reviews export cleanly (2,618 reviews used). Support tickets, surveys and in-app comments not yet tried |
+| A3 | A fixed taxonomy of about 8–12 categories covers most feedback | Run the taxonomy over real feedback and check the "Other" share | Product Owner | **Confirmed for app reviews:** 12 categories, 1.9% "Other". Other channels not yet tested |
+| A4 | PMs will trust AI-generated categories if every theme shows its evidence | Business UAT with pilot PMs (doc 08), then use in a real prioritisation meeting | Product Owner, with the pilot PMs | **Open.** First business-user test (UAT-14) in progress |
+| A5 | Sending feedback text to an external AI provider is acceptable once personal data is removed | Data-protection review of the redaction, the provider's terms and the 24-hour deletion | Information Security / Data Protection Officer | **Open.** Built to support approval (redaction, no training on data, deletion after 24 hours) but not yet reviewed |
+| A6 | The targets in §6 are the right measures of success | Review §6 at the requirements sign-off | Project Sponsor | **Open** |
+
+---
+
+## 8. Stakeholders and Decision Rights
+
+The client is a retail bank's digital team. People are named by **role title
+only**. The Delivery Lead is the supplier side (the person building the
+platform); every other role is on the client side.
+
+| Role | Interest | Involvement |
+|---|---|---|
+| **Project Sponsor** (e.g. Head of Digital) | Business case, budget, timeline | Approves scope, budget and timeline changes; gives final go-live approval |
+| **Product Owner** (e.g. Head of Product, mobile app) | That the tool helps PMs prioritise | Owns requirements and priorities; approves requirement changes; signs off UAT |
+| **Business Users** (pilot Product Managers) | A faster, evidenced view of customer problems | Take part in prototype review and run business UAT; give feedback after go-live |
+| **Information Security / Data Protection Officer** | Customer data is handled lawfully and safely | Approves privacy and data-handling changes and the use of an external AI provider |
+| **Customer Operations Lead** | Support issues are visible to Product | Supplies support-ticket exports; owns the Operations items in the Action summary |
+| **Engineering Lead** (client) | Issues reach Engineering with enough detail to act on | Reviews the Action summary format; owns the Engineering items |
+| **Delivery Lead / PM** (Tez, supplier) | Delivering the platform on time and to quality | Plans and builds; makes technical design decisions; raises changes for approval |
+
+### Who decides what
+
+| Decision | Decides | Consulted |
+|---|---|---|
+| Scope, budget and timeline | Project Sponsor | Product Owner, Delivery Lead |
+| Requirements and their priority | Product Owner | Business Users, Delivery Lead |
+| Categories in the taxonomy | Product Owner | Business Users, Customer Operations Lead |
+| Privacy, data handling and the AI provider | Information Security / DPO | Delivery Lead |
+| Technical design (model, architecture, tools) | Delivery Lead | Information Security for anything touching data |
+| UAT sign-off | Product Owner | Business Users |
+| Go-live | Project Sponsor | Product Owner, Information Security |
+
+These rights are used throughout: approvals in the change control log
+(doc 10), risk owners (doc 06), client milestones in the plan (doc 04) and
+UAT sign-off (doc 08).

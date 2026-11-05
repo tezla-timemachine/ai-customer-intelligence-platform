@@ -1,6 +1,6 @@
 # Business Requirements Document — AI Customer Intelligence Platform (MVP)
 
-> **Status:** v0.5 · 1 Nov 2026 · Covers challenge Parts 2 (MVP definition) and 3 (BRD).
+> **Status:** v0.6 · 5 Nov 2026 · Covers challenge Parts 2 (MVP definition) and 3 (BRD).
 > Builds on [Product / Business Brief](ai-customer-intelligence-platform-01-product-business-brief.md). Figures marked *(assumption)*
 > are placeholders to validate during build and evaluation.
 >
@@ -13,6 +13,10 @@
 > **v0.5:** baselined. FR-04 updated to the outcome rule (CR-08), FR-17 Action summary added (CR-17), and
 > [Appendix A](#appendix-a--changes-since-baseline) records every change since baseline, what was outside the
 > original scope, and the one deviation found (privacy retention), now fixed by CR-18.
+> **v0.6:** after mentor review, refocused on what the client needs. Technical detail (how AI and code
+> split the work, the processing pipeline, the output format, model settings) moved to the
+> [architecture document](ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md). No requirement changed in substance. Added expected
+> business outcomes (§11) and approvals by client role (§12) (CR-19).
 
 ---
 
@@ -113,34 +117,32 @@ The older model's labels (`topic_label_ALL`, `review_sentiment_label`) are
 
 ### 2.4 What the MVP does
 
-| Capability | Done by | Why |
-|---|---|---|
-| Classify each item into a product-issue category | **LLM** | Customers describe the same problem in many ways; rules miss paraphrases |
-| Detect sentiment (positive / negative / neutral / mixed) | **LLM** | Mixed feedback and sarcasm need language understanding |
-| Extract a short theme / pain point per item | **LLM** | Turning "it just sits doing nothing" into "login hangs after security code" is interpretation |
-| Interpret the underlying customer problem | **LLM** | Same reason — meaning, not keywords |
-| Suggest possible product opportunities from top pain points | **LLM** (labelled as suggestions) | Generative task; useful prompt for the PM, not a decision |
-| Validate the file (columns, empty rows, size) | **Code** | Must be exact and predictable |
-| Remove obvious personal data (emails, phone numbers, account/card numbers) before sending to the LLM | **Code** | Pattern matching is reliable and auditable |
-| Count items per category / theme | **Code** | Counting must be exactly right every time — LLMs can miscount |
-| Calculate percentages and statistics | **Code** | Arithmetic is free, instant and guaranteed in code |
-| Rank pain points (frequency × negativity) | **Code** | Ranking rule must be transparent and repeatable |
-| Filter by category, sentiment, date, segment | **Code** | Standard data operation |
-| Draw charts | **Code** | Standard charting library |
-| Pick supporting quotes for each theme | **Code** selects from LLM-tagged items | Quotes are always real rows from the file, never generated text |
-| Compare results with the existing topic model | **Code** | Side-by-side counts; no AI needed |
-| Export results to CSV | **Code** | Standard |
+For **every** review in the uploaded file, the MVP:
 
-**Rule of thumb used throughout:** the LLM only *reads and labels* text.
-Anything that produces a number, an order or a chart is deterministic code.
-This keeps the numbers trustworthy, keeps cost down (the LLM is called once
-per batch of reviews, not for every chart or filter), and means the same
-upload always gives the same counts.
+- sorts it into a product-issue category, plus up to 3 other issues it raises
+- judges whether the customer is positive, negative, neutral or mixed
+- sums up its main point in a short theme and, for complaints, the underlying problem
+
+Then, across the whole file, it:
+
+- ranks the biggest pain points by how often and how negatively they come up
+- shows real customer quotes behind each one
+- lets the PM filter by category, sentiment, date and app version, and see trends
+- groups the pain points by owning team for hand-off (Action summary, FR-17)
+- can suggest product opportunities, clearly labelled as AI suggestions
+- exports every review with its labels
+
+**Business rule:** AI reads and labels the reviews; every number, ranking and
+chart is calculated exactly. So the counts a PM quotes in a meeting are
+always right, the same file always gives the same counts, and the AI never
+makes the prioritisation decision. How the work is split between AI and
+code is in the [architecture document, §1.1](ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md#11-what-ai-does-and-what-code-does).
 
 ### 2.5 Category taxonomy (controlled list)
 
-The LLM must choose from this fixed list — it may not invent categories.
-Built from reading the 2025 Santander reviews.
+The AI must choose from this fixed list; it may not invent categories.
+Built from reading the 2025 Santander reviews. The list is owned by the
+Product Owner ([Brief §8](ai-customer-intelligence-platform-01-product-business-brief.md#8-stakeholders-and-decision-rights)).
 
 | Category | Covers | Example from the data |
 |---|---|---|
@@ -161,10 +163,9 @@ Themes (the short pain-point phrase) are free text, so new problems can
 still surface even if the category is "Other". A high share of "Other" is
 the signal to revise the taxonomy.
 
-**Design decision — taxonomy as configuration:** the category list lives in
-a separate config file, not in the code. Pointing the platform at a
-different domain (another bank, a different product, or a non-banking use
-case) means swapping the config and the data — not rebuilding.
+**Changing the list:** the Product Owner can change the categories without
+rebuilding the software (FR-16), so the same platform can be pointed at
+another product, another bank or a non-banking use case.
 
 ---
 
@@ -185,19 +186,24 @@ the MVP.
 
 ---
 
-## 4. User Flow
+## 4. User Journey
 
-```
-Upload CSV
-  → Validate file            (code: columns, size, empty rows)
-  → Clean & redact           (code: strip personal data)
-  → Analyse feedback         (LLM: category, sentiment, theme, problem — in batches)
-  → Check structured output  (code: valid JSON, allowed values; retry or flag)
-  → Aggregate results        (code: counts, %, ranking)
-  → Display insights         (dashboard: top pain points, charts, filters)
-  → Review evidence          (click a theme → see the real quotes)
-  → Export results           (CSV of every item with its labels)
-```
+1. **Upload** a CSV of feedback, or use the sample data.
+2. **Check the file:** see straight away whether it was accepted, and how many
+   rows were skipped and why.
+3. **Wait for the analysis:** a progress bar shows how far it has got. The
+   full 2,618-review dataset takes about 6 minutes.
+4. **Read the answer first:** the biggest problem in one sentence, then the
+   ranked pain points.
+5. **Check the evidence:** open a pain point to read the real customer quotes
+   behind it.
+6. **Explore:** filter by category, sentiment, date or app version, and look
+   at trends over time.
+7. **Hand off:** download the Action summary for Engineering, Product and
+   Operations, or export every review with its labels.
+
+The processing steps behind this journey are in the
+[architecture document, §1](ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md#1-system-architecture).
 
 ---
 
@@ -207,7 +213,7 @@ Upload CSV
 |---|---|---|
 | **FR-01 Upload feedback** | The user shall be able to upload a CSV file containing customer feedback. | Must |
 | **FR-02 Validate file** | The system shall check required columns exist, reject files over 5,000 rows / 5 MB, and report how many rows were skipped (e.g. empty feedback) and why. | Must |
-| **FR-03 Redact personal data** | The system shall remove email addresses, phone numbers and card/account-number patterns from feedback text before it is sent to the LLM. | Must |
+| **FR-03 Redact personal data** | The system shall remove email addresses, phone numbers and card/account-number patterns from feedback text before it is sent to the AI service. | Must |
 | **FR-04 Classify feedback** | The system shall assign each feedback item one **main** category from the controlled taxonomy (§2.5), chosen by **outcome**: the task the customer was trying to do that went wrong. The cause goes in the secondary categories. *(Changed v0.5, CR-08; was "the issue given most words or anger".)* | Must |
 | **FR-04b Secondary issues** | Where a review raises other distinct issues, the system shall record up to 3 secondary categories from the same taxonomy. | Must |
 | **FR-05 Sentiment** | The system shall label each item positive, negative, neutral or mixed. | Must |
@@ -221,26 +227,29 @@ Upload CSV
 | **FR-13 Opportunity suggestions** | The system shall suggest up to 5 product opportunities based on the top pain points, each linked to the pain point it addresses and clearly labelled "AI suggestion". | Could |
 | **FR-14 Export** | The user shall be able to download a CSV of every item with its category, sentiment, theme and problem. | Must |
 | **FR-15 Processing status** | The system shall show progress while analysis runs and a summary when it completes (items analysed, items failed). | Should |
-| **FR-16 Configurable taxonomy** | Categories and their definitions shall be loaded from a config file, so they can be changed without code changes. | Must |
-| **FR-17 Action summary** | The dashboard shall group the ranked pain points by suggested owner team (Engineering, Product, Operations, from a config file), with example themes, related issues, app versions, trend and a quote, downloadable as Markdown. *(Added v0.5, CR-17: outside the original scope.)* | Could |
+| **FR-16 Configurable taxonomy** | The Product Owner shall be able to change the categories and their definitions without changing the software. | Must |
+| **FR-17 Action summary** | The dashboard shall group the ranked pain points by suggested owner team (Engineering, Product, Operations), with example themes, related issues, app versions, trend and a quote, downloadable as Markdown. *(Added v0.5, CR-17: outside the original scope.)* | Could |
 
 ---
 
-## 6. AI Requirements
+## 6. AI Quality Requirements
+
+What the client needs from the AI, and how it will be judged. How each one
+is met technically is in the [architecture document, §2.4](ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md#24-how-the-ai-requirements-are-met).
 
 | Area | Requirement |
 |---|---|
-| **Structured output** | The LLM shall return JSON only, one object per item: `{ "id", "category", "other_categories", "sentiment", "theme", "problem", "confidence" }`. `category` and `sentiment` must be values from the allowed lists. |
-| **Model behaviour** | Repeatable labels: lowest randomness the provider allows (the current Anthropic SDK offers no temperature setting), verified by the evaluation's duplicate-consistency check. The prompt includes the taxonomy with definitions and 1 example per category. The model labels only what the customer said — no guessing intent beyond the text. |
-| **Multiple issues in one item** | The model returns the *main* category plus up to 3 `other_categories`. Secondary categories must be from the taxonomy, distinct, and never repeat the main one — code enforces this. Every issue a customer raises counts towards the pain-point ranking. |
-| **Very short reviews** | One- or two-word reviews ("good", "rubbish") are still classified (usually Praise, Other, or the aspect named — e.g. "slow" → Performance) but are not expected to produce a meaningful theme. |
-| **Grounding / evidence** | Every insight shown must trace back to real rows. Quotes are pulled from the original file by row ID, never written by the LLM. Opportunity suggestions must reference the pain point(s) they come from. |
-| **Failure handling** | Invalid JSON or a value outside the allowed lists → retry once; if it fails again, mark the item "Unclassified" and count it in the summary. The analysis never silently drops rows. |
-| **Low confidence** | Items with `confidence` below 0.6 are flagged for optional human review. *(assumption — threshold to tune against the eval set)* |
-| **Response time** | 1,000 reviews analysed in under 3 minutes; the full 2,618-review dataset in under 8 minutes *(assumption)*. Achieved by sending items in batches (~20 per call) rather than one call per row. |
-| **Max file size** | 5,000 rows / 5 MB per upload for the MVP. Covers the full nine-month working dataset (2,618 rows) with headroom. |
-| **Cost** | Target under £1 per 1,000 reviews *(assumption — confirm once model chosen in Part 4)*. Charts, filters and exports cost nothing because they don't call the LLM. |
-| **Quality bar** | ≥ 85% category accuracy and ≥ 85% sentiment accuracy against the human-labelled evaluation set (Part 9), **measured separately on low-star reviews**, before the MVP is shown to users. |
+| **Accuracy** | At least 85% agreement with human labels on category and on sentiment, using a human-labelled set of 50 reviews, **measured separately on low-star reviews**, before users see it. |
+| **Every issue counts** | When a review raises several issues, each one counts in the pain-point ranking, while the review keeps one main issue as its headline. |
+| **Consistency** | The same review always gets the same labels. Checked in the evaluation with duplicate reviews. |
+| **Real evidence only** | Every insight traces back to real reviews. Quotes are always the customer's own words, never written by the AI. |
+| **Nothing lost silently** | A review the AI could not label is shown as "Unclassified" and counted. It is never dropped or guessed. |
+| **Uncertainty shown** | Labels the AI was less sure about are counted and flagged so a person can check them. *(Threshold to tune against the evaluation set.)* |
+| **Short reviews** | One- or two-word reviews ("good", "rubbish") are still labelled, but aren't expected to produce a useful theme. |
+| **AI suggestions labelled** | Opportunity suggestions are marked "AI suggestion" and linked to the pain points they come from. |
+| **Speed** | 1,000 reviews analysed in under 3 minutes; the full 2,618-review dataset in under 8 minutes. |
+| **File size** | Up to 5,000 rows or 5 MB per upload, enough for the nine-month working dataset with room to spare. |
+| **Cost** | Under £1 per 1,000 reviews analysed. Charts, filters and exports cost nothing extra. |
 
 ---
 
@@ -249,10 +258,10 @@ Upload CSV
 | Area | Requirement |
 |---|---|
 | **Performance** | Dashboard filters and charts respond in under 1 second once analysis is complete. |
-| **Security** | API keys stored as environment variables, never in code or the repo. App served over HTTPS. |
-| **Privacy** | Personal data redacted before LLM calls (FR-03). Uploaded files are not used to train models and are deleted after the session / 24 hours. Reviewer names are not present in the dataset and must not be added. *(Met from v0.5: saved results are deleted after 24 hours, CR-18. See Appendix A.3.)* |
+| **Security** | Access keys for the AI service are stored securely, never in the code or the repository. The app is served over HTTPS. |
+| **Privacy** | Personal data removed before reviews are sent to the AI service (FR-03). Uploaded files are not used to train models and are deleted after the session / 24 hours. Reviewer names are not present in the dataset and must not be added. *(Met from v0.5: saved results are deleted after 24 hours, CR-18. See Appendix A.3.)* |
 | **Scalability** | Not a goal for the MVP. Batching design allows larger files later without redesign. |
-| **Reliability** | A failed LLM call affects only its batch, not the whole upload. Results are saved once analysed so a page refresh doesn't re-run (and re-pay for) the analysis. |
+| **Reliability** | A problem with the AI service affects only some reviews, never the whole upload. Results are kept once analysed, so refreshing the page doesn't re-run (and re-pay for) the analysis. |
 | **Usability** | A first-time user can upload a file and reach the top pain points without instructions. |
 | **Transparency** | The dashboard states that categories, sentiment and suggestions are AI-generated, and shows how many items were unclassified or low-confidence. |
 
@@ -265,7 +274,7 @@ Upload CSV
   used for non-commercial portfolio purposes only.
 - **Personal data:** the dataset contains no reviewer names or IDs. Review
   text is still redacted for emails, phone numbers and account numbers
-  before any LLM call.
+  before any review is sent to the AI service.
 - **Repository:** only the small working slice and the evaluation set are
   committed to GitHub, not the full 700k-row file. The README links to the
   original source so the work is reproducible.
@@ -284,7 +293,7 @@ Upload CSV
 - Saving and comparing analyses over time / trend alerts
 - Competitor comparison across banks *(dataset supports it — strong v2 candidate)*
 - Analysing the bank's replies to reviews
-- Editing categories in the app (config file only)
+- Editing categories inside the app (the Product Owner changes them outside the app, FR-16)
 - More than 3 secondary issues per review
 - Languages other than English
 - Automatic roadmap or ticket creation (e.g. pushing to Jira)
@@ -298,10 +307,40 @@ Anything later added from this list, or beyond it, is recorded in
 
 ## 10. Open Questions
 
-- Which LLM and hosting? → decided in Part 4 (architecture & decision log).
-- What caused the July 2025 jump in volume and ratings? → check app version history / in-app rating prompts.
-- Does the 12-category taxonomy keep "Other" under ~10%? → check with the eval set.
-- ~~Should Praise be split to give positive insight too?~~ → **Resolved (v0.4):** specific praise is labelled by the aspect praised, so the dashboard can also show what customers like.
+| Question | Owner | Status |
+|---|---|---|
+| Which AI model and hosting? | Delivery Lead | **Resolved:** Claude Haiku, hosted on Streamlit Community Cloud ([doc 03](ai-customer-intelligence-platform-03-ai-architecture-and-decision-log.md), D8 and D15). Approval of the AI provider by Information Security is still open ([Brief](ai-customer-intelligence-platform-01-product-business-brief.md), A5) |
+| What caused the July 2025 jump in volume and ratings? | Product Owner | **Open:** check app version history and in-app rating prompts |
+| Does the 12-category taxonomy keep "Other" under ~10%? | Product Owner | **Resolved:** 1.9% "Other" across all 2,618 reviews |
+| Should Praise be split to give positive insight too? | Product Owner | **Resolved (v0.4):** specific praise is labelled by the aspect praised |
+
+---
+
+## 11. Expected Business Outcomes
+
+The client will judge the MVP on these outcomes, taken from the
+[Brief, §6](ai-customer-intelligence-platform-01-product-business-brief.md#6-business-value--success-metrics). The accuracy targets are in §6 above.
+
+| Outcome | Target | How it will be measured | Owner |
+|---|---|---|---|
+| Less time spent on analysis | From ~12 hours to under 2 hours per PM per monthly review *(assumption A1)* | Pilot PMs log time for one review cycle before and after | Product Owner |
+| Every review analysed | From a sample to 100% | Rows analysed ÷ rows received, shown on every run | Product Owner |
+| Problems seen sooner | Same day as upload, instead of the monthly review | Time from export to a ranked view | Business Users |
+| Used to make decisions | Used in the next 2 prioritisation cycles by the pilot PMs | Pilot PMs report whether the output changed or confirmed a priority | Project Sponsor |
+
+Results against these outcomes are reported in the [product case study](ai-customer-intelligence-platform-09-product-case-study.md).
+
+---
+
+## 12. Approvals
+
+Roles are defined in the [Brief, §8](ai-customer-intelligence-platform-01-product-business-brief.md#8-stakeholders-and-decision-rights). Client roles are titles only.
+
+| What is approved | By | Status |
+|---|---|---|
+| Requirements (this document) | Product Owner | Pending: shared with the mentor for review (milestone M1) |
+| Scope, budget and timeline | Project Sponsor | Pending |
+| Privacy requirement and use of an external AI provider | Information Security / DPO | Pending |
 
 ---
 
@@ -324,9 +363,9 @@ requirements.
 |---|---|---|---|---|---|
 | CR-01 | 30 Oct | Working dataset widened from Aug 2025 to Jan–Sep 2025 (2,618 reviews) | In scope (data) | §2.1 dataset, §2.2 baseline recomputed | v0.3 |
 | CR-02 | 30 Oct | Upload limit raised from 2,000 to 5,000 rows | In scope | FR-02, AI requirements (max file size) | v0.3 |
-| CR-03 | 30 Oct | Main category plus up to 3 secondary categories | **Added** | New FR-04b; FR-09 counts secondary issues; JSON schema gains `other_categories` | v0.4 |
+| CR-03 | 30 Oct | Main category plus up to 3 secondary categories | **Added** | New FR-04b; FR-09 counts secondary issues; results include secondary issues | v0.4 |
 | CR-04 | 30 Oct | Taxonomy v2: Praise narrowed, crash and "old app better" rules | In scope | §2.5 taxonomy | v0.4 |
-| CR-05 | 31 Oct | Anthropic SDK 2.x fix | No BRD impact | None (defect) | — |
+| CR-05 | 31 Oct | Fix for a change in the AI provider's software | No BRD impact | None (defect) | — |
 | CR-06 | 31 Oct | "Temperature 0" replaced by repeatability measured in the eval | In scope | AI requirements (model behaviour) | v0.4 text updated |
 | CR-07 | 31 Oct | Commit author rewritten for privacy | No BRD impact | None (repository) | — |
 | CR-08 | 31 Oct | Main issue chosen by **outcome** (prompt and taxonomy v3) | In scope (changes a rule) | **FR-04 rule changed**; §2.5 taxonomy v3 | v0.5 |
@@ -338,6 +377,7 @@ requirements.
 | CR-16 | 1 Nov | Plain-English signposting: answer-first headline, definitions, tooltips | In scope | Delivers the usability and transparency NFRs | — |
 | CR-17 | 1 Nov | Action summary page for Engineering, Product and Operations | **Added** | **New FR-17** (Could). Stays inside §9: it downloads a summary but does not create tickets automatically | v0.5 |
 | CR-18 | 1 Nov | Saved results deleted after 24 hours | In scope (fixes a gap) | Delivers the privacy NFR, which was not met (A.3) | v0.5 |
+| CR-19 | 5 Nov | Client-focused documents after mentor review | No requirement change | Technical detail moved to doc 03; §2.4, §4 and §6 rewritten in business terms; §11 outcomes and §12 approvals added | v0.6 |
 
 Proposed but not decided: CR-10 (taxonomy boundaries) and CR-11 (outcome rule
 and praise). Neither changes a requirement; both aim to raise accuracy.
@@ -348,13 +388,13 @@ and praise). Neither changes a requirement; both aim to raise accuracy.
 |---|---|---|
 | Secondary categories (CR-03) | 20 of 50 labelled reviews raised several issues; one label per review hid real complaints from the ranking | More complex schema and eval; extra accuracy measures |
 | Shipped sample results (CR-14) | Live demo loads in about 1 second at no AI cost, even after a cloud restart | One results file to regenerate whenever the prompt or model changes |
-| Action summary page (CR-17) | Turns the ranking into a hand-off for Engineering, Product and Operations | Owner mapping is a judgement, kept in config; trends need care because review volume jumped in July 2025 |
+| Action summary page (CR-17) | Turns the ranking into a hand-off for Engineering, Product and Operations | Which team owns which issue is a judgement the client can change; trends need care because review volume jumped in July 2025 |
 
 ### A.3 Deviations from this BRD
 
 | Requirement | What the BRD says | What the app does | Action |
 |---|---|---|---|
-| Privacy NFR | Uploaded files are deleted after the session / 24 hours | Analysed results, including the original review text, are saved in SQLite (decision D14) and nothing deleted them. On the cloud they lasted until the app restarted; locally until the file was deleted | **Fixed by CR-18 (1 Nov):** saved results older than 24 hours are deleted whenever the page loads or an analysis starts, and the deleted text is overwritten on disk. The shipped sample reloads from `data/precomputed/` at no cost. The sidebar tells users this. **No open deviations remain.** |
+| Privacy NFR | Uploaded files are deleted after the session / 24 hours | Analysed results, including the original review text, were stored (decision D14) and nothing deleted them. On the cloud they lasted until the app restarted; locally until the file was deleted | **Fixed by CR-18 (1 Nov):** saved results older than 24 hours are deleted whenever the page loads or an analysis starts, and the deleted text is overwritten on disk. The sample data still loads instantly at no cost. The app tells users this. **No open deviations remain.** |
 
 ### A.4 Planned scope not yet approved
 
